@@ -15,7 +15,7 @@ jobs:
       - name: Set up Git configuration
         run: |
           git config --global user.name "Mahnoor"
-          git config --global user.email "mahnoor300@example.com"
+          git config --global user.email "mahnoorriaz300@gmail.com"
 
       - name: Create a new branch
         run: |
