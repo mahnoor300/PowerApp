@@ -49,7 +49,7 @@ jobs:
           head: $NEW_BRANCH
 
       - name: Merge the Pull Request (Optional)
-        uses: hmarr/auto-merge-action@v1
+        uses: PowerApp/auto-merge-action@v1
         with:
           pull_request_number: ${{ steps.create_pull_request.outputs.pull_request_number }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
