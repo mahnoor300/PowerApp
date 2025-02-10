@@ -44,8 +44,8 @@ jobs:
         with:
           title: "Automated PR: Merge $NEW_BRANCH into main"
           body: "This PR was automatically created by the GitHub Actions workflow."
-          base: main
-          head: $NEW_BRANCH
+          base: main  # Target branch
+          branch: $NEW_BRANCH  # Source branch (the newly created one)
 
       - name: Auto-merge Pull Request
         uses: octokit/request-action@v2.x
