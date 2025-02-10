@@ -40,16 +40,3 @@ jobs:
         run: |
           git push origin $NEW_BRANCH
 
-      - name: Create a Pull Request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          title: "Automated PR: Merge $NEW_BRANCH into main"
-          body: "This PR was automatically created by the GitHub Actions workflow."
-          base: main
-          head: $NEW_BRANCH
-
-      - name: Merge the Pull Request (Optional)
-        uses: PowerApp/auto-merge-action@v1
-        with:
-          pull_request_number: ${{ steps.create_pull_request.outputs.pull_request_number }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
