@@ -39,3 +39,18 @@ jobs:
       - name: Push the new branch to GitHub
         run: |
           git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} $NEW_BRANCH
+      - name: Create a Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: "Automated PR: Merge $NEW_BRANCH into main"
+          body: "This PR was automatically created by the GitHub Actions workflow."
+          base: main
+          head: $NEW_BRANCH
+
+      - name: Auto-merge Pull Request
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/${{ github.repository }}/pulls/${{ steps.create_pull_request.outputs.pull_request_number }}/merge
+          pull_request_number: ${{ steps.create_pull_request.outputs.pull_request_number }}
+          merge_method: merge  # Can also be 'squash' or 'rebase'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
