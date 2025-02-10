@@ -42,10 +42,10 @@ jobs:
       - name: Create a Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          title: "Automated PR: Merge $NEW_BRANCH into main"
+          title: "Automated PR: Merge ${{ steps.create_branch.outputs.branch }} into main"
           body: "This PR was automatically created by the GitHub Actions workflow."
           base: main  # Target branch
-          branch: $NEW_BRANCH  # Source branch (the newly created one)
+          branch: ${{ steps.create_branch.outputs.branch }} 
 
       - name: Auto-merge Pull Request
         uses: octokit/request-action@v2.x
