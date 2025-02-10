@@ -1,0 +1,55 @@
+name: Create and Merge Branch Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create_and_merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Git configuration
+        run: |
+          git config --global user.name "Mahnoor"
+          git config --global user.email "mahnoor300@example.com"
+
+      - name: Create a new branch
+        run: |
+          # Define a new branch name
+          NEW_BRANCH="feature/$(date +%Y%m%d%H%M%S)"
+          git checkout -b $NEW_BRANCH
+          echo "Created new branch: $NEW_BRANCH"
+
+      - name: Make changes (Optional)
+        run: |
+          # Here you can modify files, add new files, etc.
+          echo "Making some changes..."
+          touch newfile.txt
+          echo "This is a new file created during the workflow." > newfile.txt
+          git add newfile.txt
+
+      - name: Commit changes
+        run: |
+          git commit -m "Add new file from GitHub Actions workflow"
+
+      - name: Push the new branch to GitHub
+        run: |
+          git push origin $NEW_BRANCH
+
+      - name: Create a Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: "Automated PR: Merge $NEW_BRANCH into main"
+          body: "This PR was automatically created by the GitHub Actions workflow."
+          base: main
+          head: $NEW_BRANCH
+
+      - name: Merge the Pull Request (Optional)
+        uses: hmarr/auto-merge-action@v1
+        with:
+          pull_request_number: ${{ steps.create_pull_request.outputs.pull_request_number }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
