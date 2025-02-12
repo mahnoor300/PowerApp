@@ -1,10 +1,7 @@
 name: Create and Merge Branch Workflow
 
 on:
-  push:
-    branches:
-      - main
-
+  workflow_dispatch:
 jobs:
   create_and_merge:
     runs-on: ubuntu-latest
