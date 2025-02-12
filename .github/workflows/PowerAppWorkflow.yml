@@ -26,8 +26,8 @@ on:
 env:
 #edit your values here
   ENVIRONMENT_URL: 'https://org41c53d90.crm4.dynamics.com'
-  CLIENT_ID: 'c37f4956-70a3-4e74-a2d2-225b579d1a21'
-  TENANT_ID: '302edaf0-65d6-449a-a796-b83cfb733f0d'
+  CLIENT_ID: secret.APP_ID
+  TENANT_ID: secret.TENANT_ID
 permissions:
   contents: write
 jobs:
