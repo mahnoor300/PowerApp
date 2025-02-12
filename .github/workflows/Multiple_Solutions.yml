@@ -1,0 +1,74 @@
+name: export-and-branch-solution
+# Export solution from DEV environment
+# Unpack it and prepare, commit, and push a git branch with the changes
+
+on:
+  workflow_dispatch:
+    inputs:
+      # List of solutions to work on
+      solutions:
+        description: 'Comma separated list of solutions to be worked on from Power Platform'
+        required: true
+        default: 'ALMLab, SolutionB, SolutionC'  # Add the solutions you want to work with
+
+env:
+  ENVIRONMENT_URL: 'https://org41c53d90.crm4.dynamics.com'
+  CLIENT_ID: ${{ secrets.APP_ID }}
+  TENANT_ID: ${{ secrets.TENANT_ID }}
+  
+permissions:
+  contents: write
+
+jobs:
+  export-from-dev:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        solution: ${{ matrix.solutions }} This takes the comma-separated solutions and creates a matrix.
+
+    env:
+      RUNNER_DEBUG: 1
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        lfs: true
+
+    - name: Install PAC CLI
+      uses: microsoft/powerplatform-actions/actions-install@v1
+      with:
+        cloud: 'Public'
+
+    - name: who-am-i action
+      uses: microsoft/powerplatform-actions/who-am-i@v1
+      with:
+        environment-url: ${{env.ENVIRONMENT_URL}}
+        app-id: ${{env.CLIENT_ID}}
+        client-secret: ${{ secrets.PowerPlatformSPN }}
+        tenant-id: ${{env.TENANT_ID}}
+
+    - name: export-solution action
+      uses: microsoft/powerplatform-actions/export-solution@v1
+      with:
+        environment-url: ${{env.ENVIRONMENT_URL}}
+        app-id: ${{env.CLIENT_ID}}
+        client-secret: ${{ secrets.PowerPlatformSPN }}
+        tenant-id: ${{env.TENANT_ID}}
+        solution-name: ${{ matrix.solution }}  # Uses the current solution name in the matrix
+        solution-output-file: out/exported/${{ matrix.solution }}.zip
+
+    - name: unpack-solution action
+      uses: microsoft/powerplatform-actions/unpack-solution@v1
+      with:
+        solution-file: out/exported/${{ matrix.solution }}.zip
+        solution-folder: out/solutions/${{ matrix.solution }}
+        solution-type: 'Unmanaged'
+        overwrite-files: true
+
+    - name: branch-solution, prepare it for a PullRequest
+      uses: microsoft/powerplatform-actions/branch-solution@v1
+      with:
+        solution-folder: out/solutions/${{ matrix.solution }}
+        solution-target-folder: solutions/${{ matrix.solution }}
+        repo-token: ${{ secrets.ACCESS_SECRET }}
+        allow-empty-commit: true
