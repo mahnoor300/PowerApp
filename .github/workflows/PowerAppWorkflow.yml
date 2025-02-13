@@ -53,8 +53,8 @@ jobs:
       uses: microsoft/powerplatform-actions/who-am-i@v1
       with:
         environment-url: ${{env.ENVIRONMENT_URL}}
-        app-id: ${{env.CLIENT_ID}}
-        client-secret: ${{ secrets.PowerPlatformSPN }}
+        app-id: 'c37f4956-70a3-4e74-a2d2-225b579d1a21'
+        client-secret: 'Icm8Q~DW6gqGm1Cn8CO02HaiHTgnYfh_lCla5bU1'
         # tenant-id: ${{env.TENANT_ID}}
         tenant-id: '302edaf0-65d6-449a-a796-b83cfb733f0d'
  
