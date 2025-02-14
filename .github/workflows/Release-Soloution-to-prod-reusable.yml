@@ -67,9 +67,12 @@ jobs:
     - name: Pack solution
       uses: microsoft/powerplatform-actions/pack-solution@v1
       with:
-        solution-folder: 'solutions/devsol'
-        solution-file: 'out/solutions/devsol.zip'
+        solution-folder: ${{ inputs.solution_source_folder}}/${{ inputs.solution_name }}
+        solution-file: ${{ inputs.solution_outbound_folder}}/${{ inputs.solution_name }}.zip
         solution-type: Unmanaged
+        # Make sure folder separators are forward slashes to avoid path issues
+        # Path for "Other" folder
+        other-folder-path: "solutions/${{ inputs.solution_name }}/Other"  # Use forward slashes for GitHub path
 
     - name: Import solution as unmanaged to build env
       uses: microsoft/powerplatform-actions/import-solution@v1
