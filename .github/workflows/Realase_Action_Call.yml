@@ -3,20 +3,19 @@ name: Release action
 # Release your solution to prod when you create a new release.
 
 on:
-  workflow_dispatch
-  #release:
-      #types: [created]        
+  workflow_dispatch      
 permissions:
   contents: write
 jobs:
   Release-solution-ALMLab:
-    uses: ./.github/workflows/Release-Soloution-to-prod-reusable.yml
+    uses: ./.github/workflows/release-solution-to-prod-with-inputs.yml
     with:
       #You can specify the solution name here
-      solution_name: devsol  
-      BUILD_ENVIRONMENT_URL: ${{secrets.ENVIRONMENT_URL}}
-      PRODUCTION_ENVIRONMENT_URL: ${{ secrets.PRODUCTION_ENVIRONMENT_URL}}
-      CLIENT_ID: ${{secrets.APP_ID}}
-      TENANT_ID: ${{secrets.TENANT_ID}}
+      solution_name: devsol
+      #Update your values here
+      BUILD_ENVIRONMENT_URL: ${{ secrets.BUILD_ENVIRONMENT_URL }}
+      PRODUCTION_ENVIRONMENT_URL: ${{ secrets.PRODUCTION_ENVIRONMENT_URL }}
+      CLIENT_ID: ${{ secrets.APP_ID }}
+      TENANT_ID: ${{ secrets.TENANT_ID }}    
     secrets:
       envSecret: ${{ secrets.PowerPlatformSPN }}
