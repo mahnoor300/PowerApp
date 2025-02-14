@@ -55,7 +55,7 @@ jobs:
         environment-url: ${{env.ENVIRONMENT_URL}}
         app-id: ${{env.CLIENT_ID}}
         #client-secret: 'Icm8Q~DW6gqGm1Cn8CO02HaiHTgnYfh_lCla5bU1'
-        tenant-id: ${{env.TENANT_ID}}
+        tenant-id: ${{secrets.TENANT_ID}}
         #tenant-id: '302edaf0-65d6-449a-a796-b83cfb733f0d'
  
  
