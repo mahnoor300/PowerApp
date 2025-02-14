@@ -122,6 +122,10 @@ jobs:
       with:
         name: managedSolutions
         path: ${{ inputs.solution_release_folder}}
+    - name: Install PAC CLI
+      uses: microsoft/powerplatform-actions/actions-install@v1
+      with:
+        cloud: 'Public'
     - name: Import solution to prod env
       uses: microsoft/powerplatform-actions/import-solution@v1
       with:
