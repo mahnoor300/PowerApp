@@ -79,7 +79,7 @@ jobs:
       with:
         environment-url: ${{secrets.BUILD_ENVIRONMENT_URL}}
         app-id: ${{secrets.CLIENT_ID}}
-        client-secret: ${{ secrets.envSecret }}
+        client-secret: ${{ secrets.PowerPlatformSPN }}
         tenant-id: ${{secrets.TENANT_ID}}
         solution-file: ${{ inputs.solution_outbound_folder}}/${{ inputs.solution_name }}.zip
         force-overwrite: true
