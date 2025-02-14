@@ -8,7 +8,7 @@ permissions:
   contents: write
 jobs:
   Release-solution-ALMLab:
-    uses: ./.github/workflows/release-solution-to-prod-with-inputs.yml
+    uses: ./.github/workflows/Release-Soloution-to-prod-reusable.yml
     with:
       #You can specify the solution name here
       solution_name: devsol
