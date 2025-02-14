@@ -10,10 +10,10 @@ jobs:
     uses: ./.github/workflows/Release-Soloution-to-prod-reusable.yml
     with:
       solution_name: devsol
-      BUILD_ENVIRONMENT_URL: secrets.ENVIRONMENT_URL  # Correct syntax for accessing secrets
-      PRODUCTION_ENVIRONMENT_URL: secrets.PRODUCTION_ENVIRONMENT_URL  # Correct syntax for accessing secrets
-      CLIENT_ID: ${{secrets.CLIENT_ID}}  # Correct syntax for accessing secrets
-      TENANT_ID: ${{secrets.TENANT_ID}}  # Correct syntax for accessing secrets  
+      BUILD_ENVIRONMENT_URL: 'https://org5569b62d.crm15.dynamics.com'  # Correct syntax for accessing secrets
+      PRODUCTION_ENVIRONMENT_URL: 'https://orgdc49fd0d.crm15.dynamics.com'  # Correct syntax for accessing secrets
+      CLIENT_ID: '94e95571-a37c-432e-bae6-1ae9671a4983'  # Correct syntax for accessing secrets
+      TENANT_ID: '302edaf0-65d6-449a-a796-b83cfb733f0d' # Correct syntax for accessing secrets  
     secrets:
       envSecret: ${{secrets.PowerPlatformSPN}}
 
