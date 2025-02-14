@@ -74,6 +74,10 @@ jobs:
         # Path for "Other" folder
         other-folder-path: "solutions/${{ inputs.solution_name }}/Other"  # Use forward slashes for GitHub path
 
+    - name: Debug authentication parameters
+      run: |
+        echo "App ID: ${{ secrets.CLIENT_ID }}"
+        echo "Tenant ID: ${{ secrets.TENANT_ID }}"
     - name: Import solution as unmanaged to build env
       uses: microsoft/powerplatform-actions/import-solution@v1
       with:
