@@ -23,12 +23,6 @@ on:
        description: 'folder name to be created and checked in *do not change*'
        required: true
        default: solutions/
-env:
-#edit your values here
-  ENVIRONMENT_URL: secrets.ENVIRONMENT_URL
-  CLIENT_ID: secrets.APP_ID
-  client-secret: secrets.PowerPlatformSPN
-  TENANT_ID: secrets.TENANT_ID
 permissions:
   contents: write
 jobs:
