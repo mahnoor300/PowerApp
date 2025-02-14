@@ -52,11 +52,11 @@ jobs:
     - name: who-am-i action
       uses: microsoft/powerplatform-actions/who-am-i@v1
       with:
-        environment-url: 'https://org5569b62d.crm15.dynamics.com'
-        app-id: '94e95571-a37c-432e-bae6-1ae9671a4983'
-        client-secret: 'Icm8Q~DW6gqGm1Cn8CO02HaiHTgnYfh_lCla5bU1'
-        #tenant-id: ${{secrets.TENANT_ID}}
-        tenant-id: '302edaf0-65d6-449a-a796-b83cfb733f0d'
+        environment-url: ${{secrets.ENVIRONMENT_URL}}
+        app-id: ${{secrets.CLIENT_ID}}
+        client-secret: ${{secrets.PowerPlatformSPN}}
+        tenant-id: ${{secrets.TENANT_ID}}
+        #tenant-id: '302edaf0-65d6-449a-a796-b83cfb733f0d'
  
  
     # - name: export-solution action
