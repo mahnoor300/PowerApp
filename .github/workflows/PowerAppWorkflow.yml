@@ -25,11 +25,11 @@ on:
        default: solutions/
 env:
 #edit your values here
-  ENVIRONMENT_URL: 'https://org5569b62d.crm15.dynamics.com'
-  # CLIENT_ID: secrets.APP_ID
-  client-secret: 'Icm8Q~DW6gqGm1Cn8CO02HaiHTgnYfh_lCla5bU1'
-  # TENANT_ID: secrets.TENANT_ID
-  tenant-id: '302edaf0-65d6-449a-a796-b83cfb733f0d'
+  ENVIRONMENT_URL: secrets.ENVIRONMENT_URL
+  CLIENT_ID: secrets.APP_ID
+  #client-secret: 'Icm8Q~DW6gqGm1Cn8CO02HaiHTgnYfh_lCla5bU1'
+  TENANT_ID: secrets.TENANT_ID
+  #tenant-id: '302edaf0-65d6-449a-a796-b83cfb733f0d'
 permissions:
   contents: write
 jobs:
@@ -53,10 +53,10 @@ jobs:
       uses: microsoft/powerplatform-actions/who-am-i@v1
       with:
         environment-url: ${{env.ENVIRONMENT_URL}}
-        app-id: '94e95571-a37c-432e-bae6-1ae9671a4983'
-        client-secret: 'Icm8Q~DW6gqGm1Cn8CO02HaiHTgnYfh_lCla5bU1'
-        # tenant-id: ${{env.TENANT_ID}}
-        tenant-id: '302edaf0-65d6-449a-a796-b83cfb733f0d'
+        app-id: ${{env.CLIENT_ID}}
+        #client-secret: 'Icm8Q~DW6gqGm1Cn8CO02HaiHTgnYfh_lCla5bU1'
+        tenant-id: ${{env.TENANT_ID}}
+        #tenant-id: '302edaf0-65d6-449a-a796-b83cfb733f0d'
  
  
     # - name: export-solution action
