@@ -52,7 +52,7 @@ jobs:
     - name: who-am-i action
       uses: microsoft/powerplatform-actions/who-am-i@v1
       with:
-        environment-url: ${{secrets.ENVIRONMENT_URL}}
+        environment-url: 'https://org5569b62d.crm15.dynamics.com'
         app-id: ${{secrets.CLIENT_ID}}
         #client-secret: 'Icm8Q~DW6gqGm1Cn8CO02HaiHTgnYfh_lCla5bU1'
         tenant-id: ${{secrets.TENANT_ID}}
