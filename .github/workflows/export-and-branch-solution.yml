@@ -71,7 +71,6 @@ jobs:
 
     - name: Add Jira Issue Key to Commit and Log to Jira
       run: |
-        # Set the Jira issue key manually
         issue_key="SCRUM-1"
         
         # Create a commit message with Jira issue key
@@ -81,10 +80,10 @@ jobs:
         git push
 
         # Post a comment on Jira with the branch name and issue key
-        curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.JIRA_API_TOKEN }}" \
-          -H "Content-Type: application/json" \
-          --data '{"body": "Branch 'powerappsol' has been created for Jira Issue: $issue_key"}' \
-          "https://your-jira-instance.atlassian.net/rest/api/2/issue/$issue_key/comment"
-
+        curl -X POST `
+          -H "Authorization: Bearer ${{ secrets.JIRA_API_TOKEN }}" `
+          -H "Content-Type: application/json" `
+          --data "{\"body\": \"Branch 'powerappsol' has been created for Jira Issue: $issue_key\"}" `
+          "https://mahnoorriaz300.atlassian.net/rest/api/2/issue/$issue_key/comment"
+        
         echo "Branch 'powerappsol' linked to Jira Issue: $issue_key"
