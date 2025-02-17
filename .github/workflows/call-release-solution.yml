@@ -1,8 +1,9 @@
 name: Call Release Solution Workflow
 on:
- release:
+  release:
     types:
-      - published 
+      - published
+
 jobs:
   call-release-workflow:
     uses: ./.github/workflows/release-solution-to-prod-reusable.yml
@@ -13,3 +14,7 @@ jobs:
       TENANT_ID: ${{ secrets.TENANT_ID }}  
       envSecret: ${{ secrets.PowerPlatformSPN }}  
 
+    steps:  # This should be aligned with "jobs" and "call-release-workflow"
+      - name: Link Jira Issue to Release
+        run: |
+          echo "Release linked to Jira issue SCRUM-1"
