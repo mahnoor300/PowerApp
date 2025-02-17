@@ -1,16 +1,11 @@
 name: export-and-branch-solution
-# Export solution from DEV environment
-#  unpack it and prepare, commit and push a git branch with the changes
- 
 on:
   workflow_dispatch:
     inputs:
-      # Change this value
       solution_name:
         description: 'name of the solution to worked on from Power Platform'
         required: true
-        default: devsol
-       #Do Not change these values
+        default: powerappsol
       solution_exported_folder:
         description: 'folder name for staging the exported solution *do not change*'
         required: true
@@ -28,7 +23,6 @@ permissions:
 jobs:
   export-from-dev:
     runs-on: windows-latest
-    # or you can say runs-on: ubuntu-latest
     env:
       RUNNER_DEBUG: 1
  
@@ -36,7 +30,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         lfs: true
-
+        
     - name: Install PAC CLI
       uses: microsoft/powerplatform-actions/actions-install@v1
       with:
