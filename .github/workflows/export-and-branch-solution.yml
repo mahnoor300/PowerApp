@@ -60,23 +60,15 @@ jobs:
         solution-folder: out/solutions/powerappsol
         solution-type: 'Unmanaged'
         overwrite-files: true
+        
  
     - name: branch-solution, prepare it for a PullRequest
       uses: microsoft/powerplatform-actions/branch-solution@v1
       with:
         solution-folder: out/solutions/powerappsol
-        solution-target-folder: solutions/powerappsol
+        solution-target-folder: solutions/scrum-1-powerappsol
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-    - name: Add Jira Issue Key to Commit and Log to Jira
-      run: |
-        issue_key="SCRUM-1"
-        
-        # Create a commit message with Jira issue key
-        git config --global user.name "Mahnoor"
-        git config --global user.email "mahnnoorriaz300@gmail.com"
-        git commit -m "Export and unpack solution for Jira Issue: $issue_key"
-        git push
 
 
