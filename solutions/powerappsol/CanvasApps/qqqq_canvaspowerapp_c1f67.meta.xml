@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CanvasApp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>qqqq_canvaspowerapp_c1f67</Name>
-  <AppVersion>2025-02-17T09:47:12Z</AppVersion>
+  <AppVersion>2025-02-17T10:26:23Z</AppVersion>
   <Status>Ready</Status>
   <CreatedByClientVersion>3.25021.9.0</CreatedByClientVersion>
   <MinClientVersion>3.25021.9.0</MinClientVersion>
@@ -10,12 +10,12 @@
   <GalleryItemId xsi:nil="true"></GalleryItemId>
   <BackgroundColor>RGBA(0,176,240,1)</BackgroundColor>
   <DisplayName>canvaspowerapp</DisplayName>
-  <Description xsi:nil="true"></Description>
-  <CommitMessage xsi:nil="true"></CommitMessage>
-  <Publisher xsi:nil="true"></Publisher>
+  <Description></Description>
+  <CommitMessage></CommitMessage>
+  <Publisher></Publisher>
   <AuthorizationReferences>[]</AuthorizationReferences>
   <ConnectionReferences>{}</ConnectionReferences>
-  <DatabaseReferences>{"default.cds":{"databaseDetails":{"referenceType":"NotSpecified","environmentName":"default.cds","overrideValues":{"status":"NotSpecified","environmentVariableName":""}},"dataSources":{"Dfsds":{"entitySetName":"qqqq_dfsds","logicalName":"qqqq_dfsd"},"qqqq_relatedinfos":{"entitySetName":"qqqq_relatedinfos","logicalName":"qqqq_relatedinfo"}}}}</DatabaseReferences>
+  <DatabaseReferences>{"default.cds":{"databaseDetails":{"referenceType":"Environmental","environmentName":"default.cds","overrideValues":{"status":"NotSpecified","environmentVariableName":""}},"dataSources":{"Dfsds":{"entitySetName":"qqqq_dfsds","logicalName":"qqqq_dfsd"},"qqqq_relatedinfos":{"entitySetName":"qqqq_relatedinfos","logicalName":"qqqq_relatedinfo"}}}}</DatabaseReferences>
   <AppComponents>[]</AppComponents>
   <AppComponentDependencies>[]</AppComponentDependencies>
   <CanConsumeAppPass>0</CanConsumeAppPass>
@@ -24,7 +24,7 @@
   <AdminControlBypassConsent>0</AdminControlBypassConsent>
   <EmbeddedApp xsi:nil="true"></EmbeddedApp>
   <IntroducedVersion>1.0</IntroducedVersion>
-  <CdsDependencies>{"cdsdependencies":[{"logicalname":"qqqq_dfsd","componenttype":1},{"logicalname":"qqqq_relatedinfo","componenttype":1}]}</CdsDependencies>
+  <CdsDependencies>{"cdsdependencies":[{"componenttype":1,"logicalname":"qqqq_dfsd"},{"componenttype":1,"logicalname":"qqqq_relatedinfo"}]}</CdsDependencies>
   <IsCustomizable>1</IsCustomizable>
   <BackgroundImageUri>/CanvasApps/qqqq_canvaspowerapp_c1f67_BackgroundImageUri</BackgroundImageUri>
   <DocumentUri>/CanvasApps/qqqq_canvaspowerapp_c1f67_DocumentUri.msapp</DocumentUri>
