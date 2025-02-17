@@ -3,11 +3,10 @@ on:
   workflow_dispatch:
 jobs:
   call-release-workflow:
-    uses: ./.github/workflows/Release-Soloution-to-prod-reusable.yml   # Replace with the actual path and branch
+    uses: ./.github/workflows/reusable_test.yml   # Replace with the actual path and branch
     with:
       BUILD_ENVIRONMENT_URL: ${{ secrets.BUILD_ENVIRONMENT_URL }}  # Pass the build environment URL secret
       PRODUCTION_ENVIRONMENT_URL: ${{ secrets.PRODUCTION_ENVIRONMENT_URL }}  # Pass the production environment URL secret
-
     secrets:
       CLIENT_ID: ${{ secrets.CLIENT_ID }}  # Secret reference for client id
       TENANT_ID: ${{ secrets.TENANT_ID }}  # Secret reference for tenant id
