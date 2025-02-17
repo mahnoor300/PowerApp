@@ -52,7 +52,7 @@ jobs:
         app-id: ${{secrets.CLIENT_ID}}
         client-secret: ${{ secrets.PowerPlatformSPN }}
         tenant-id: ${{secrets.TENANT_ID}}
-        solution-name: devsol
+        solution-name: powerappsol
         solution-output-file: out/exported/powerappsol.zip
  
     - name: unpack-solution action
