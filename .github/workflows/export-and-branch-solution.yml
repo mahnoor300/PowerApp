@@ -69,3 +69,11 @@ jobs:
         solution-target-folder: solutions/powerappsol
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
+        
+    - name: Add Jira Issue Key to Commit
+      run: |
+        git config --global user.name "Mahnoor"
+        git config --global user.email "mahnnoorriaz300@gmail.com"
+        git commit -m "Export and unpack solution for SCRUM-1"
+        git push
+
