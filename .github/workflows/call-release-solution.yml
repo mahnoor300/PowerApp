@@ -2,7 +2,7 @@ name: Call Release Solution Workflow
 on:
  release:
     types:
-      - published  # Trigger when a release is published
+      - published 
 jobs:
   call-release-workflow:
     uses: ./.github/workflows/reusable_test.yml  
