@@ -5,11 +5,11 @@ on:
       - published  # Trigger when a release is published
 jobs:
   call-release-workflow:
-    uses: ./.github/workflows/reusable_test.yml   # Replace with the actual path and branch
+    uses: ./.github/workflows/reusable_test.yml  
     secrets:
-      BUILD_ENVIRONMENT_URL: ${{ secrets.BUILD_ENVIRONMENT_URL }}  # Pass the build environment URL secret
-      PRODUCTION_ENVIRONMENT_URL: ${{ secrets.PRODUCTION_ENVIRONMENT_URL }}  # Pass the production environment URL secret
-      CLIENT_ID: ${{ secrets.CLIENT_ID }}  # Secret reference for client id
-      TENANT_ID: ${{ secrets.TENANT_ID }}  # Secret reference for tenant id
-      envSecret: ${{ secrets.PowerPlatformSPN }}  # Secret reference for SPN authentication
+      BUILD_ENVIRONMENT_URL: ${{ secrets.BUILD_ENVIRONMENT_URL }}  
+      PRODUCTION_ENVIRONMENT_URL: ${{ secrets.PRODUCTION_ENVIRONMENT_URL }}  
+      CLIENT_ID: ${{ secrets.CLIENT_ID }} 
+      TENANT_ID: ${{ secrets.TENANT_ID }}  
+      envSecret: ${{ secrets.PowerPlatformSPN }}  
 
