@@ -1,6 +1,8 @@
 name: Call Release Solution Workflow
 on:
-  workflow_dispatch:
+ release:
+    types:
+      - published  # Trigger when a release is published
 jobs:
   call-release-workflow:
     uses: ./.github/workflows/reusable_test.yml   # Replace with the actual path and branch
