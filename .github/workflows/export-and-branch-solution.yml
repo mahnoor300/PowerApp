@@ -25,7 +25,6 @@ jobs:
     runs-on: windows-latest
     env:
       RUNNER_DEBUG: 1
- 
     steps:
     - uses: actions/checkout@v2
       with:
@@ -54,13 +53,13 @@ jobs:
         client-secret: ${{ secrets.PowerPlatformSPN }}
         tenant-id: ${{secrets.TENANT_ID}}
         solution-name: devsol
-        solution-output-file: out/exported/devsol.zip
+        solution-output-file: out/exported/powerappsol.zip
  
     - name: unpack-solution action
       uses: microsoft/powerplatform-actions/unpack-solution@v1
       with:
         solution-file: out/exported/devsol.zip
-        solution-folder: out/solutions/devsol
+        solution-folder: out/solutions/powerappsol
         solution-type: 'Unmanaged'
         overwrite-files: true
  
@@ -68,6 +67,6 @@ jobs:
       uses: microsoft/powerplatform-actions/branch-solution@v1
       with:
         solution-folder: out/solutions/devsol
-        solution-target-folder: solutions/devsol
+        solution-target-folder: solutions/powerappsol
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
