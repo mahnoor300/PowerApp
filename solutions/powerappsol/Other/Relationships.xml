@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EntityRelationships xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EntityRelationship Name="business_unit_qqqq_dfsd" />
+  <EntityRelationship Name="business_unit_qqqq_relatedinfo" />
+  <EntityRelationship Name="lk_qqqq_dfsd_createdby" />
+  <EntityRelationship Name="lk_qqqq_dfsd_modifiedby" />
+  <EntityRelationship Name="lk_qqqq_relatedinfo_createdby" />
+  <EntityRelationship Name="lk_qqqq_relatedinfo_modifiedby" />
+  <EntityRelationship Name="owner_qqqq_dfsd" />
+  <EntityRelationship Name="owner_qqqq_relatedinfo" />
+  <EntityRelationship Name="qqqq_Dfsd_qqqq_RelatedInfo" />
+  <EntityRelationship Name="team_qqqq_dfsd" />
+  <EntityRelationship Name="team_qqqq_relatedinfo" />
+  <EntityRelationship Name="user_qqqq_dfsd" />
+  <EntityRelationship Name="user_qqqq_relatedinfo" />
+</EntityRelationships>
