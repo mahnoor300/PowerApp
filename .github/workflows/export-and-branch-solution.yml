@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       solution_name:
-        description: 'name of the solution to worked on from Power Platform'
+        description: 'name of the solution to be worked on from Power Platform'
         required: true
         default: powerappsol
       solution_exported_folder:
@@ -15,9 +15,9 @@ on:
         required: true
         default: out/solutions/
       solution_target_folder: 
-       description: 'folder name to be created and checked in *do not change*'
-       required: true
-       default: solutions/
+        description: 'folder name to be created and checked in *do not change*'
+        required: true
+        default: solutions/
 permissions:
   contents: write
 jobs:
@@ -42,7 +42,6 @@ jobs:
         app-id: ${{secrets.CLIENT_ID}}
         client-secret: ${{secrets.PowerPlatformSPN}}
         tenant-id: ${{secrets.TENANT_ID}}
- 
  
     - name: export-solution action
       uses: microsoft/powerplatform-actions/export-solution@v1
@@ -69,11 +68,23 @@ jobs:
         solution-target-folder: solutions/powerappsol
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
-        
-    - name: Add Jira Issue Key to Commit
+
+    - name: Add Jira Issue Key to Commit and Log to Jira
       run: |
+        # Set the Jira issue key manually
+        issue_key="SCRUM-1"
+        
+        # Create a commit message with Jira issue key
         git config --global user.name "Mahnoor"
         git config --global user.email "mahnnoorriaz300@gmail.com"
-        git commit -m "Export and unpack solution for SCRUM-1"
+        git commit -m "Export and unpack solution for Jira Issue: $issue_key"
         git push
 
+        # Post a comment on Jira with the branch name and issue key
+        curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.JIRA_API_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          --data '{"body": "Branch 'powerappsol' has been created for Jira Issue: $issue_key"}' \
+          "https://your-jira-instance.atlassian.net/rest/api/2/issue/$issue_key/comment"
+
+        echo "Branch 'powerappsol' linked to Jira Issue: $issue_key"
