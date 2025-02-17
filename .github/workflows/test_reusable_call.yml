@@ -1,0 +1,14 @@
+name: Call Release Solution Workflow
+on:
+  workflow_dispatch:
+jobs:
+  call-release-workflow:
+    uses: ./.github/workflows/Release-Soloution-to-prod-reusable.yml  # Replace with the actual path and branch
+    with:
+      solution_name: devsol   # Your solution name (optional, replace with actual name)
+      BUILD_ENVIRONMENT_URL: ${{ secrets.ENVIRONMENT_URL }}  # Reference to secret
+      PRODUCTION_ENVIRONMENT_URL: ${{ secrets.PRODUCTION_ENVIRONMENT_URL }}  # Reference to secret
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}  # Reference to secret
+      TENANT_ID: ${{ secrets.TENANT_ID }}  # Reference to secret
+    secrets:
+      envSecret: ${{ secrets.PowerPlatformSPN }}  # Reference to secret for SPN authentication
