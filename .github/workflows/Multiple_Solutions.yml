@@ -6,15 +6,8 @@ on:
         description: 'Comma separated list of solutions to be worked on from Power Platform'
         required: true
         default: 'devsol gitsol, powerappsol'  # Add the solutions you want to work with
-
-env:
-  ENVIRONMENT_URL: 'https://org41c53d90.crm4.dynamics.com'
-  CLIENT_ID: ${{ secrets.APP_ID }}
-  TENANT_ID: ${{ secrets.TENANT_ID }}
-  
 permissions:
   contents: write
-
 jobs:
   export-from-dev:
     runs-on: windows-latest
@@ -38,18 +31,18 @@ jobs:
     - name: who-am-i action
       uses: microsoft/powerplatform-actions/who-am-i@v1
       with:
-        environment-url: ${{env.ENVIRONMENT_URL}}
-        app-id: ${{env.CLIENT_ID}}
-        client-secret: ${{ secrets.PowerPlatformSPN }}
-        tenant-id: ${{env.TENANT_ID}}
+        environment-url: ${{secrets.ENVIRONMENT_URL}}
+        app-id: ${{secrets.CLIENT_ID}}
+        client-secret: ${{secrets.PowerPlatformSPN}}
+        tenant-id: ${{secrets.TENANT_ID}}
 
     - name: export-solution action
       uses: microsoft/powerplatform-actions/export-solution@v1
       with:
-        environment-url: ${{env.ENVIRONMENT_URL}}
-        app-id: ${{env.CLIENT_ID}}
-        client-secret: ${{ secrets.PowerPlatformSPN }}
-        tenant-id: ${{env.TENANT_ID}}
+        environment-url: ${{secrets.ENVIRONMENT_URL}}
+        app-id: ${{secrets.CLIENT_ID}}
+        client-secret: ${{secrets.PowerPlatformSPN}}
+        tenant-id: ${{secrets.TENANT_ID}}
         solution-name: ${{ matrix.solution }}  # Uses the current solution name in the matrix
         solution-output-file: out/exported/${{ matrix.solution }}.zip
 
