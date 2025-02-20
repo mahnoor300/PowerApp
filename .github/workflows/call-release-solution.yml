@@ -5,25 +5,8 @@ on:
       - published
 
 jobs:
-  link-jira-issue:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Link Jira Issue to Release
-        run: |
-          release_tag=${{ github.ref }}
-          issue_key=$(echo $release_tag | cut -d'/' -f3 | cut -d'-' -f1)  # Extract Jira issue key from release name
-
-          echo "Release linked to Jira issue: $issue_key"
-
-          # Post a comment to Jira issue
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.JIRA_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            --data '{"body": "Release for version $release_tag has been published for Jira Issue: $issue_key"}' \
-            "https://your-jira-instance.atlassian.net/rest/api/2/issue/$issue_key/comment"
 
   call-release-workflow:
-    needs: link-jira-issue  # Ensure this job runs after the Jira job
     uses: ./.github/workflows/release-solution-to-prod-reusable.yml
     secrets:
       BUILD_ENVIRONMENT_URL: ${{ secrets.BUILD_ENVIRONMENT_URL }}  
