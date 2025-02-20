@@ -1,15 +1,11 @@
 name: export-and-branch-solution
-# Export solution from DEV environment
-# Unpack it and prepare, commit, and push a git branch with the changes
-
 on:
   workflow_dispatch:
     inputs:
-      # List of solutions to work on
       solutions:
         description: 'Comma separated list of solutions to be worked on from Power Platform'
         required: true
-        default: 'ALMLab, SolutionB, SolutionC'  # Add the solutions you want to work with
+        default: 'devsol gitsol, powerappsol'  # Add the solutions you want to work with
 
 env:
   ENVIRONMENT_URL: 'https://org41c53d90.crm4.dynamics.com'
