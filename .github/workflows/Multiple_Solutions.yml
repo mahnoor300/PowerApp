@@ -6,8 +6,7 @@ on:
       solutions:
         description: 'Comma separated list of solutions to be worked on from Power Platform'
         required: true
-        default: 'devsol, gitsol, powerappsol'  # Correctly format the input solutions list
-
+        default: 'devsol, gitsol, powerappsol'  # Correct format for input
 permissions:
   contents: write
 
@@ -16,7 +15,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        solution: ${{ fromJson('["' + inputs.solutions.replace(', ', '","') + '"]') }}  # This converts the input string to an array
+        solution: ${{ fromJson('["' + inputs.solutions | split(',') | join('","') + '"]') }}  # Splitting solutions into a matrix
         
     env:
       RUNNER_DEBUG: 1
@@ -34,18 +33,18 @@ jobs:
     - name: who-am-i action
       uses: microsoft/powerplatform-actions/who-am-i@v1
       with:
-        environment-url: ${{secrets.ENVIRONMENT_URL}}
-        app-id: ${{secrets.CLIENT_ID}}
-        client-secret: ${{secrets.PowerPlatformSPN}}
-        tenant-id: ${{secrets.TENANT_ID}}
+        environment-url: ${{ secrets.ENVIRONMENT_URL }}
+        app-id: ${{ secrets.CLIENT_ID }}
+        client-secret: ${{ secrets.PowerPlatformSPN }}
+        tenant-id: ${{ secrets.TENANT_ID }}
 
     - name: export-solution action
       uses: microsoft/powerplatform-actions/export-solution@v1
       with:
-        environment-url: ${{secrets.ENVIRONMENT_URL}}
-        app-id: ${{secrets.CLIENT_ID}}
-        client-secret: ${{secrets.PowerPlatformSPN}}
-        tenant-id: ${{secrets.TENANT_ID}}
+        environment-url: ${{ secrets.ENVIRONMENT_URL }}
+        app-id: ${{ secrets.CLIENT_ID }}
+        client-secret: ${{ secrets.PowerPlatformSPN }}
+        tenant-id: ${{ secrets.TENANT_ID }}
         solution-name: ${{ matrix.solution }}  # Uses the current solution name in the matrix
         solution-output-file: out/exported/${{ matrix.solution }}.zip
 
