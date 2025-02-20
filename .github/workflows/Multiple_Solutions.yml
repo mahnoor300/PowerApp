@@ -1,20 +1,23 @@
 name: export-and-branch-solution
+
 on:
   workflow_dispatch:
     inputs:
       solutions:
         description: 'Comma separated list of solutions to be worked on from Power Platform'
         required: true
-        default: 'devsol gitsol, powerappsol'  # Add the solutions you want to work with
+        default: 'devsol, gitsol, powerappsol'  # Correctly format the input solutions list
+
 permissions:
   contents: write
+
 jobs:
   export-from-dev:
     runs-on: windows-latest
     strategy:
       matrix:
-        solution: ${{ matrix.solutions }} This takes the comma-separated solutions and creates a matrix.
-
+        solution: ${{ fromJson('["' + inputs.solutions.replace(', ', '","') + '"]') }}  # This converts the input string to an array
+        
     env:
       RUNNER_DEBUG: 1
 
