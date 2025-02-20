@@ -6,7 +6,8 @@ on:
       solutions:
         description: 'Comma separated list of solutions to be worked on from Power Platform'
         required: true
-        default: 'devsol, gitsol, powerappsol'  # Correct format for input
+        default: 'devsol,gitsol,powerappsol'  # Comma-separated list
+
 permissions:
   contents: write
 
@@ -15,8 +16,8 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        solution: ${{ fromJson('["' + inputs.solutions | split(',') | join('","') + '"]') }}  # Splitting solutions into a matrix
-        
+        solution: [devsol, gitsol, powerappsol]  # Directly define solutions in the matrix
+
     env:
       RUNNER_DEBUG: 1
 
