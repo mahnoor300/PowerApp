@@ -50,14 +50,14 @@ jobs:
         app-id: ${{secrets.CLIENT_ID}}
         client-secret: ${{ secrets.PowerPlatformSPN }}
         tenant-id: ${{secrets.TENANT_ID}}
-        solution-name: powerappsol
-        solution-output-file: out/exported/powerappsol.zip
+        solution-name: devsol
+        solution-output-file: out/exported/devsol.zip
  
     - name: unpack-solution action
       uses: microsoft/powerplatform-actions/unpack-solution@v1
       with:
-        solution-file: out/exported/powerappsol.zip
-        solution-folder: out/solutions/powerappsol
+        solution-file: out/exported/devsol.zip
+        solution-folder: out/solutions/devsol
         solution-type: 'Unmanaged'
         overwrite-files: true
         
@@ -65,7 +65,7 @@ jobs:
     - name: branch-solution, prepare it for a PullRequest
       uses: microsoft/powerplatform-actions/branch-solution@v1
       with:
-        solution-folder: out/solutions/powerappsol
+        solution-folder: out/solutions/devsol
         solution-target-folder: solutions/SCRUM-1-powerappsol
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
