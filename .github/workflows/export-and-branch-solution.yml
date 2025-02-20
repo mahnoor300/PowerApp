@@ -5,7 +5,7 @@ on:
       solution_name:
         description: 'name of the solution to be worked on from Power Platform'
         required: true
-        default: powerappsol
+        default: devsol
       solution_exported_folder:
         description: 'folder name for staging the exported solution *do not change*'
         required: true
