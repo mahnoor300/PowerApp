@@ -3,7 +3,8 @@ on:
   workflow_dispatch:
 #    types:
 #      - published
-
+permissions:
+  contents: write
 jobs:
 
   call-release-workflow:
