@@ -1,0 +1,113 @@
+name: Incremental Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      solution_name:
+        description: 'The solution name to be deployed.'
+        required: true
+        type: string
+        default: 'devsol'
+      solution_folder:
+        description: 'The folder containing the solution files.'
+        required: true
+        type: string
+        default: 'out/solutions'
+      solution_output_folder:
+        description: 'The folder for the managed solution output.'
+        required: true
+        type: string
+        default: 'out/ship'
+
+jobs:
+  check-for-changes:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Detect changes in solution
+        id: changes
+        run: |
+          # Check if any files in the out/solutions directory have changed
+          git diff --quiet ${{ inputs.solution_folder }}/${{ inputs.solution_name }}
+          if [ $? -eq 0 ]; then
+            echo "No changes detected."
+            echo "::set-output name=has_changes::false"
+          else
+            echo "Changes detected."
+            echo "::set-output name=has_changes::true"
+          fi
+
+  convert-to-managed:
+    needs: check-for-changes
+    if: steps.changes.outputs.has_changes == 'true'
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Install PAC CLI
+        uses: microsoft/powerplatform-actions/actions-install@v1
+        with:
+          cloud: 'Public'
+
+      - name: Pack solution (only changed components)
+        uses: microsoft/powerplatform-actions/pack-solution@v1
+        with:
+          solution-folder: ${{ inputs.solution_folder }}/${{ inputs.solution_name }}
+          solution-file: ${{ inputs.solution_folder }}/${{ inputs.solution_name }}.zip
+          solution-type: Unmanaged
+
+      - name: Export solution as managed
+        uses: microsoft/powerplatform-actions/export-solution@v1
+        with:
+          environment-url: ${{secrets.BUILD_ENVIRONMENT_URL}}
+          app-id: ${{secrets.CLIENT_ID}}
+          client-secret: ${{ secrets.envSecret }}
+          tenant-id: ${{secrets.TENANT_ID}}
+          solution-name: ${{ inputs.solution_name }}
+          managed: true
+          solution-output-file: ${{ inputs.solution_output_folder }}/${{ inputs.solution_name }}_managed.zip
+
+      - name: Upload the managed solution to GitHub artifact store
+        uses: actions/upload-artifact@v4
+        with:
+          name: managedSolutions
+          path: ${{ inputs.solution_output_folder }}/${{ inputs.solution_name }}_managed.zip
+
+  deploy-to-prod:
+    needs: [convert-to-managed]
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Download managed solution from artifact store
+        uses: actions/download-artifact@v4
+        with:
+          name: managedSolutions
+          path: out/release/
+
+      - name: Install PAC CLI
+        uses: microsoft/powerplatform-actions/actions-install@v1
+        with:
+          cloud: 'Public'
+
+      - name: Import solution to production
+        uses: microsoft/powerplatform-actions/import-solution@v1
+        with:
+          environment-url: ${{secrets.PRODUCTION_ENVIRONMENT_URL}}
+          app-id: ${{secrets.CLIENT_ID}}
+          client-secret: ${{ secrets.envSecret }}
+          tenant-id: ${{secrets.TENANT_ID}}
+          solution-file: out/release/${{ inputs.solution_name }}_managed.zip
+          force-overwrite: true
+          publish-changes: true
