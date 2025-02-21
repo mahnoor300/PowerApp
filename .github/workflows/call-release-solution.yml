@@ -10,8 +10,8 @@ jobs:
   call-release-workflow:
     uses: ./.github/workflows/release-solution-to-prod-reusable.yml
     with:
-      BUILD_ENVIRONMENT_URL: 'https://org5569b62d.crm15.dynamics.com'
-      PRODUCTION_ENVIRONMENT_URL: 'https://orgdc49fd0d.crm15.dynamics.com'
+      BUILD_ENVIRONMENT_URL: vars.BUILD_ENVIRONMENT_URL
+      PRODUCTION_ENVIRONMENT_URL: vars.PRODUCTION_ENVIRONMENT_URL
     secrets:
       CLIENT_ID: vars.CLIENT_ID
       TENANT_ID: vars.TENANT_ID
