@@ -1,119 +1,116 @@
-name: Incremental Deployment
-
+name: release-solution-to-prod-reusable-change
+# Reusable workflow
+# convert solution to managed (using a build PowerPlatform environment for the conversion)
+# upload the solution to the GitHub artifacts and deploy to the PROD environment
 on:
-  workflow_dispatch:
-    inputs:
+  workflow_call:
+    inputs: 
       solution_name:
-        description: 'The name of the solution.'
-        required: true
-        default: 'powerappsol'
+        description: 'The solution name.'
+        type: string
+        default: devsol       
       solution_shipping_folder:
-        description: 'Folder for staging the exported solution.'
-        required: true
-        default: 'out/ship/'
+        description: 'folder name for staging the exported solution *do not change*'        
+        type: string
+        default: out/ship/
       solution_outbound_folder:
-        description: 'Folder for staging the unpacked solution before check-in.'
-        required: true
-        default: 'out/solutions/'
-      solution_source_folder:
-        description: 'Folder for the solution to be checked in.'
-        required: true
-        default: 'solutions/'
+        description: 'staging the unpacked solution folder before check-in *do not change*'
+        type: string
+        default: out/solutions/
+      solution_source_folder: 
+       description: 'folder name to be created and checked in *do not change*'
+       type: string
+       default: solutions/
       solution_release_folder:
-        description: 'Folder where the released binaries are hosted.'
+       description: 'folder where the released binaries are going to be hosted *do not change*'
+       type: string
+       default: out/release
+
+      BUILD_ENVIRONMENT_URL:
+        description: 'Build environment url.'
+        type: string
+        required: true      
+      PRODUCTION_ENVIRONMENT_URL: 
+        description: 'Production environment url.'
+        type: string
         required: true
-        default: 'out/release/'
+      CLIENT_ID: 
+        description: 'The client id'
+        type: string
+        required: true
+      TENANT_ID: 
+        description: 'The tenant id'
+        type: string
+        required: true
+
+    secrets:
+      envSecret:
+        description: 'The secret value for authentication using SPN'
+        required: true
 
 jobs:
-  check-for-changes:
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-
-      - name: Detect changes in solution
-        id: changes
-        run: |
-          # PowerShell script to check if there are any changes in the solution folder
-          $solution_folder = "${{ inputs.solution_source_folder }}/${{ inputs.solution_name }}"
-          $changes = git diff --quiet $solution_folder
-          if ($changes -eq $null) {
-            Write-Host "No changes detected."
-            echo "::set-output name=has_changes::false"
-          } else {
-            Write-Host "Changes detected."
-            echo "::set-output name=has_changes::true"
-          }
-
   convert-to-managed:
-    needs: check-for-changes
-    if: steps.changes.outputs.has_changes == 'true'
     runs-on: windows-latest
+    env:
+      RUNNER_DEBUG: 1
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          lfs: true
+    - uses: actions/checkout@v2
+      with:
+        lfs: true
 
-      - name: Install PAC CLI
-        uses: microsoft/powerplatform-actions/actions-install@v1
-        with:
-          cloud: 'Public'
+    - name: Install PAC CLI
+      uses: microsoft/powerplatform-actions/actions-install@v1
+      with:
+        cloud: 'Public'
+        
+    - name: Export solution as managed
+      uses: microsoft/powerplatform-actions/export-solution@v1
+      with:
+        environment-url: ${{inputs.BUILD_ENVIRONMENT_URL}}
+        app-id: ${{vars.CLIENT_ID}}
+        client-secret: ${{ secrets.envSecret }} 
+        tenant-id: ${{vars.TENANT_ID}}
+        solution-name: ${{ inputs.solution_name }}
+        managed: true
+        solution-output-file: ${{ inputs.solution_shipping_folder}}/${{ inputs.solution_name }}_managed.zip
 
-      - name: Pack solution (only changed components)
-        uses: microsoft/powerplatform-actions/pack-solution@v1
-        with:
-          solution-folder: out/solutions/${{ inputs.solution_name }}
-          solution-file: out/solutions/${{ inputs.solution_name }}.zip
-          solution-type: Unmanaged
+    - name: Upload the ready to ship solution to GH artifact store
+      uses: actions/upload-artifact@v4
+      with:
+        name: managedSolutions
+        path: ${{ inputs.solution_shipping_folder}}/
 
-      - name: Export solution as managed
-        uses: microsoft/powerplatform-actions/export-solution@v1
-        with:
-          environment-url: ${{secrets.BUILD_ENVIRONMENT_URL}}
-          app-id: ${{secrets.CLIENT_ID}}
-          client-secret: ${{ secrets.envSecret }}
-          tenant-id: ${{secrets.TENANT_ID}}
-          solution-name: ${{ inputs.solution_name }}
-          managed: true
-          solution-output-file: out/ship/${{ inputs.solution_name }}_managed.zip
-
-      - name: Upload the managed solution to GitHub artifact store
-        uses: actions/upload-artifact@v4
-        with:
-          name: managedSolutions
-          path: out/ship/${{ inputs.solution_name }}_managed.zip
-
-  deploy-to-prod:
-    needs: [convert-to-managed]
+  release-to-staging:
+    needs: [ convert-to-managed ]
     runs-on: windows-latest
-
+    env:
+      RUNNER_DEBUG: 1
+    environment:
+      name: staging  # This references the environment where approval is required
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+      with:
+        lfs: true
 
-      - name: Download managed solution from artifact store
-        uses: actions/download-artifact@v4
-        with:
-          name: managedSolutions
-          path: out/release/
-
-      - name: Install PAC CLI
-        uses: microsoft/powerplatform-actions/actions-install@v1
-        with:
-          cloud: 'Public'
-
-      - name: Import solution to production
-        uses: microsoft/powerplatform-actions/import-solution@v1
-        with:
-          environment-url: ${{secrets.PRODUCTION_ENVIRONMENT_URL}}
-          app-id: ${{secrets.CLIENT_ID}}
-          client-secret: ${{ secrets.envSecret }}
-          tenant-id: ${{secrets.TENANT_ID}}
-          solution-file: out/release/${{ inputs.solution_name }}_managed.zip
-          force-overwrite: true
-          publish-changes: true
+    - name: Fetch the ready to ship solution from GH artifact store
+      uses: actions/download-artifact@v4
+      with:
+        name: managedSolutions
+        path: ${{ inputs.solution_release_folder}}
+        
+    - name: Install PAC CLI
+      uses: microsoft/powerplatform-actions/actions-install@v1
+      with:
+        cloud: 'Public'
+        
+    - name: Import solution to prod env
+      uses: microsoft/powerplatform-actions/import-solution@v1
+      with:
+        environment-url: ${{inputs.PRODUCTION_ENVIRONMENT_URL}}
+        app-id: ${{vars.CLIENT_ID}}
+        client-secret: ${{ secrets.envSecret }}
+        tenant-id: ${{vars.TENANT_ID}}
+        solution-file: ${{ inputs.solution_release_folder}}/${{ inputs.solution_name }}_managed.zip
+        force-overwrite: true
+        publish-changes: true
