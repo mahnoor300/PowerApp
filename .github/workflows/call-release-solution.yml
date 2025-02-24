@@ -12,8 +12,8 @@ jobs:
     with:
       BUILD_ENVIRONMENT_URL: vars.BUILD_ENVIRONMENT_URL
       PRODUCTION_ENVIRONMENT_URL: vars.PRODUCTION_ENVIRONMENT_URL
-      CLIENT_ID: vars.CLIENT_ID
       TENANT_ID: vars.TENANT_ID
+      CLIENT_ID: vars.CLIENT_ID
     secrets:
 
       envSecret: ${{ secrets.PowerPlatformSPN }}
