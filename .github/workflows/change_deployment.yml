@@ -25,7 +25,6 @@ on:
        description: 'folder where the released binaries are going to be hosted *do not change*'
        type: string
        default: out/release
-
       BUILD_ENVIRONMENT_URL:
         description: 'Build environment url.'
         type: string
@@ -42,7 +41,6 @@ on:
       TENANT_ID: 
         description: 'The tenant id'
         required: true
-
       envSecret:
         description: 'The secret value for authentication using SPN'
         required: true
