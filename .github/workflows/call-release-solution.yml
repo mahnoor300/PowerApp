@@ -9,7 +9,7 @@ on:
 jobs:
 
   call-release-workflow:
-    uses: ./.github/workflows/release-solution-to-prod-reusable.yml
+    uses: ./.github/workflows/change_deployment.yml
     with:
       BUILD_ENVIRONMENT_URL: ${{ vars.BUILD_ENVIRONMENT_URL }}  
       PRODUCTION_ENVIRONMENT_URL: ${{ vars.PRODUCTION_ENVIRONMENT_URL }}  
