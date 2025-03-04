@@ -6,11 +6,11 @@
     <isquickfindquery>0</isquickfindquery>
     <isprivate>0</isprivate>
     <isdefault>1</isdefault>
-    <savedqueryid>{f7ac2693-1722-478c-81b3-7e3089e879fe}</savedqueryid>
+    <savedqueryid>{8340a896-abf0-4d09-893a-38978709ae28}</savedqueryid>
     <layoutxml>
-      <grid name="resultset" jump="wdfcs234_newcolumn" select="1" icon="1" preview="1">
-        <row name="result" id="wdfcs234_table1id">
-          <cell name="wdfcs234_newcolumn" width="300" />
+      <grid name="resultset" jump="ref3442_bhyname" select="1" icon="1" preview="1">
+        <row name="result" id="ref3442_bhyid">
+          <cell name="ref3442_bhyname" width="300" />
           <cell name="createdon" width="125" />
         </row>
       </grid>
@@ -18,17 +18,17 @@
     <querytype>1</querytype>
     <fetchxml>
       <fetch version="1.0" mapping="logical">
-        <entity name="wdfcs234_table1">
-          <attribute name="wdfcs234_table1id" />
-          <attribute name="wdfcs234_newcolumn" />
+        <entity name="ref3442_bhy">
+          <attribute name="ref3442_bhyid" />
+          <attribute name="ref3442_bhyname" />
           <attribute name="createdon" />
-          <order attribute="wdfcs234_newcolumn" descending="false" />
+          <order attribute="ref3442_bhyname" descending="false" />
         </entity>
       </fetch>
     </fetchxml>
     <IntroducedVersion>1.0</IntroducedVersion>
     <LocalizedNames>
-      <LocalizedName description="Table1 Advanced Find View" languagecode="1033" />
+      <LocalizedName description="Bhy Advanced Find View" languagecode="1033" />
     </LocalizedNames>
   </savedquery>
 </savedqueries>

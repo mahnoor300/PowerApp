@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{4efbf085-1d3b-40f5-b19c-9c4c839db38b}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{d35f6c81-1586-4190-a2cf-34092ab6d4e5}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{35f5f349-f9fd-415e-9a2c-699eb1b4866c}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{d355f2c7-6f96-459b-9721-5459d9f962db}">
+                        <labels>
+                          <label description="Bhy Details" languagecode="1033" />
+                        </labels>
+                        <control id="ref3442_bhydetails1" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="ref3442_bhydetails1" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{6830b0be-6044-4e88-ac97-680a4b5a190e}">
+                        <labels>
+                          <label description="Owner" languagecode="1033" />
+                        </labels>
+                        <control id="ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{c299752d-0f2e-4795-9946-c16b15f44eab}">
+                        <labels>
+                          <label description="Bhy" languagecode="1033" />
+                        </labels>
+                        <control id="ref3442_bhyid" classid="{270bd3db-d9af-4782-9025-509e298dec0a}" datafieldname="ref3442_bhyid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7baf16ba-2d02-4bed-a5eb-c0e666c0d77d}">
+                        <labels>
+                          <label description="Detail Description" languagecode="1033" />
+                        </labels>
+                        <control id="ref3442_detaildescription" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="ref3442_detaildescription" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8f7e3f09-d6fa-48ec-96c6-46e25f153fc0}">
+                        <labels>
+                          <label description="Is Active" languagecode="1033" />
+                        </labels>
+                        <control id="ref3442_isactive" classid="{67fac785-cd58-4f9f-abb3-4b7ddc6ed5ed}" datafieldname="ref3442_isactive" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

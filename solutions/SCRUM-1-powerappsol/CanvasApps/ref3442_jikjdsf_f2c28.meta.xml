@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CanvasApp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Name>wdfcs234_appdev_a592d</Name>
-  <AppVersion>2025-02-20T12:20:10Z</AppVersion>
+  <Name>ref3442_jikjdsf_f2c28</Name>
+  <AppVersion>2025-03-04T08:25:56Z</AppVersion>
   <Status>Ready</Status>
-  <CreatedByClientVersion>3.25022.8.0</CreatedByClientVersion>
-  <MinClientVersion>3.25022.8.0</MinClientVersion>
-  <Tags>{"primaryDeviceWidth":"1366","primaryDeviceHeight":"768","supportsPortrait":"true","supportsLandscape":"true","primaryFormFactor":"Tablet","showStatusBar":"false","publisherVersion":"3.25022.8","minimumRequiredApiVersion":"2.2.0","hasComponent":"false","hasUnlockedComponent":"false","isUnifiedRootApp":"false"}</Tags>
+  <CreatedByClientVersion>3.25023.6.0</CreatedByClientVersion>
+  <MinClientVersion>3.25023.6.0</MinClientVersion>
+  <Tags>{"primaryDeviceWidth":"1366","primaryDeviceHeight":"768","supportsPortrait":"true","supportsLandscape":"true","primaryFormFactor":"Tablet","showStatusBar":"false","publisherVersion":"3.25023.6","minimumRequiredApiVersion":"2.2.0","hasComponent":"false","hasUnlockedComponent":"false","isUnifiedRootApp":"false"}</Tags>
   <IsCdsUpgraded>0</IsCdsUpgraded>
   <GalleryItemId xsi:nil="true"></GalleryItemId>
   <BackgroundColor>RGBA(0,176,240,1)</BackgroundColor>
-  <DisplayName>app-dev</DisplayName>
+  <DisplayName>jikjdsf</DisplayName>
   <Description xsi:nil="true"></Description>
   <CommitMessage xsi:nil="true"></CommitMessage>
   <Publisher xsi:nil="true"></Publisher>
@@ -26,9 +26,9 @@
   <IntroducedVersion>1.0</IntroducedVersion>
   <CdsDependencies>{"cdsdependencies":[{"logicalname":"account","componenttype":1}]}</CdsDependencies>
   <IsCustomizable>1</IsCustomizable>
-  <BackgroundImageUri>/CanvasApps/wdfcs234_appdev_a592d_BackgroundImageUri</BackgroundImageUri>
-  <DocumentUri>/CanvasApps/wdfcs234_appdev_a592d_DocumentUri.msapp</DocumentUri>
+  <BackgroundImageUri>/CanvasApps/ref3442_jikjdsf_f2c28_BackgroundImageUri</BackgroundImageUri>
+  <DocumentUri>/CanvasApps/ref3442_jikjdsf_f2c28_DocumentUri.msapp</DocumentUri>
   <AdditionalUris>
-    <AdditionalUri>/CanvasApps/wdfcs234_appdev_a592d_AdditionalUris0_identity.json</AdditionalUri>
+    <AdditionalUri>/CanvasApps/ref3442_jikjdsf_f2c28_AdditionalUris0_identity.json</AdditionalUri>
   </AdditionalUris>
 </CanvasApp>
