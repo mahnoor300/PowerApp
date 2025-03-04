@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ImportExportXml version="9.2.25021.188" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.25021.188" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.25021.00188">
+<ImportExportXml version="9.2.25022.172" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.25022.172" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.25022.00172">
   <SolutionManifest>
-    <UniqueName>devsol</UniqueName>
+    <UniqueName>newtestsol</UniqueName>
     <LocalizedNames>
-      <LocalizedName description="devsol" languagecode="1033" />
+      <LocalizedName description="newtestsol" languagecode="1033" />
     </LocalizedNames>
     <Descriptions />
     <Version>1.0.0.0</Version>
     <Managed>0</Managed>
     <Publisher>
-      <UniqueName>devsol</UniqueName>
+      <UniqueName>pub</UniqueName>
       <LocalizedNames>
-        <LocalizedName description="devsol" languagecode="1033" />
+        <LocalizedName description="newpub" languagecode="1033" />
       </LocalizedNames>
       <Descriptions />
       <EMailAddress xsi:nil="true"></EMailAddress>
       <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
-      <CustomizationPrefix>wdfcs234</CustomizationPrefix>
-      <CustomizationOptionValuePrefix>36534</CustomizationOptionValuePrefix>
+      <CustomizationPrefix>ref3442</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>66674</CustomizationOptionValuePrefix>
       <Addresses>
         <Address>
           <AddressNumber>1</AddressNumber>
@@ -78,8 +78,10 @@
       </Addresses>
     </Publisher>
     <RootComponents>
-      <RootComponent type="1" schemaName="wdfcs234_table1" behavior="0" />
-      <RootComponent type="300" schemaName="wdfcs234_appdev_a592d" behavior="0" />
+      <RootComponent type="1" schemaName="ref3442_bhy" behavior="0" />
+      <RootComponent type="1" schemaName="ref3442_bhydetails" behavior="0" />
+      <RootComponent type="29" id="{fca81810-d3f8-ef11-bae2-6045bd69e9dc}" behavior="0" />
+      <RootComponent type="300" schemaName="ref3442_jikjdsf_f2c28" behavior="0" />
     </RootComponents>
     <MissingDependencies />
   </SolutionManifest>

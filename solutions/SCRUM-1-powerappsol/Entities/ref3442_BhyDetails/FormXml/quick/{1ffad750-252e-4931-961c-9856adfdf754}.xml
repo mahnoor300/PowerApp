@@ -1,34 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <systemform>
-    <formid>{b7191f9e-291c-464d-9f8e-3143a99a7e22}</formid>
+    <formid>{1ffad750-252e-4931-961c-9856adfdf754}</formid>
     <IntroducedVersion>1.0</IntroducedVersion>
     <FormPresentation>1</FormPresentation>
     <FormActivationState>1</FormActivationState>
     <form>
       <tabs>
-        <tab verticallayout="true" id="{29d128d9-50fb-4ae0-96e4-c77ebd276191}" IsUserDefined="1">
+        <tab verticallayout="true" id="{379d1790-72d9-43d2-919d-66c93b3a0a21}" IsUserDefined="1">
           <labels>
             <label description="" languagecode="1033" />
           </labels>
           <columns>
             <column width="100%">
               <sections>
-                <section showlabel="false" showbar="false" IsUserDefined="0" id="{675773b1-439a-4b3c-8434-ff003d64e70a}">
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{5d131ece-5410-462f-9b67-07fc4ba46a97}">
                   <labels>
                     <label description="GENERAL" languagecode="1033" />
                   </labels>
                   <rows>
                     <row>
-                      <cell id="{1383b9a6-4720-431d-a49f-5aec4a9bb1d1}">
+                      <cell id="{c4b2f669-2e2e-4999-869f-167fc2483118}">
                         <labels>
-                          <label description="New column" languagecode="1033" />
+                          <label description="Bhy Details" languagecode="1033" />
                         </labels>
-                        <control id="wdfcs234_newcolumn" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="wdfcs234_newcolumn" />
+                        <control id="ref3442_bhydetails1" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="ref3442_bhydetails1" />
                       </cell>
                     </row>
                     <row>
-                      <cell id="{1bf83dd1-fef5-49e0-8175-e0a007474a25}">
+                      <cell id="{370a67b1-6388-41d8-b370-2b1783d2dfb0}">
                         <labels>
                           <label description="Owner" languagecode="1033" />
                         </labels>
