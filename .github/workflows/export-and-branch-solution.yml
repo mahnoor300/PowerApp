@@ -67,13 +67,15 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-  # Capture the branch name dynamically based on the push event
-    - name: Set dynamic branch name
+ 
+    # Capture the branch name dynamically based on the push event in PowerShell
+    - name: Set dynamic branch name (PowerShell)
       id: set-branch-name
+      shell: pwsh
       run: |
-        NEW_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
-        echo "Branch name is: $NEW_BRANCH"
-        echo "::set-output name=branch_name::$NEW_BRANCH"
+        $branch_name = $env:GITHUB_REF -replace 'refs/heads/', ''
+        Write-Host "Branch name is: $branch_name"
+        echo "::set-output name=branch_name::$branch_name"
 
     # Push the new branch to GitHub
     - name: Push the new branch to GitHub
@@ -95,5 +97,3 @@ jobs:
     - name: Push merged changes to main
       run: |
         git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} main
-        pull-request-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
-        merge-method: 'merge'  # You can also use 'squash' or 'rebase' if needed
