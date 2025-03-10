@@ -1,5 +1,8 @@
 name: export-and-branch-solution
 on:
+  pull_request:
+    branches: 
+      - main
   workflow_dispatch:
     inputs:
       SOLUTION_NAME:
@@ -65,7 +68,7 @@ jobs:
     - name: branch-solution, prepare it for a PullRequest
       uses: microsoft/powerplatform-actions/branch-solution@v1
       with:
-        solution-folder: out/solutions/newtestsol
+        solution-folder: out/solutions/${{vars.SOLUTION_NAME}}
         solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
