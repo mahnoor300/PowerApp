@@ -68,15 +68,13 @@ jobs:
         allow-empty-commit: true
 
 
-    # Capture the dynamic branch name (should be SCRUM-1-devsol-20250310-0802)
-    - name: Set dynamic branch name (PowerShell)
+    # Capture the dynamic branch name directly from the branch-solution step
+    - name: Set dynamic branch name (from branch-solution)
       id: set-branch-name
-      shell: pwsh
       run: |
-        $branch_name = $env:GITHUB_REF -replace 'refs/heads/', ''
-        Write-Host "Branch name is: $branch_name"
-        # Set dynamic branch name to be used in other steps
-        echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+        # Use the branch name generated in the branch-solution step (SCRUM-1-devsol-20250310-0802)
+        echo "BRANCH_NAME=SCRUM-1-${{vars.SOLUTION_NAME}}-${{ github.run_id }}" >> $GITHUB_ENV
+        echo "Branch name set to: SCRUM-1-${{vars.SOLUTION_NAME}}-${{ github.run_id }}"
 
     # Push the new branch to GitHub
     - name: Push the new branch to GitHub
