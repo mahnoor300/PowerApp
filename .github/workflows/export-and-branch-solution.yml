@@ -2,7 +2,7 @@ name: export-and-branch-solution
 on:
   workflow_dispatch:
     inputs:
-      solution_name:
+      SOLUTION_NAME:
         description: 'name of the solution to be worked on from Power Platform'
         required: true
       solution_exported_folder:
@@ -49,14 +49,14 @@ jobs:
         app-id: ${{secrets.CLIENT_ID}}
         client-secret: ${{ secrets.PowerPlatformSPN }}
         tenant-id: ${{secrets.TENANT_ID}}
-        solution-name: ${{vars.solution_name}}
-        solution-output-file: out/exported/${{vars.solution_name}}.zip
+        solution-name: ${{vars.SOLUTION_NAME}}
+        solution-output-file: out/exported/${{vars.SOLUTION_NAME}}.zip
  
     - name: unpack-solution action
       uses: microsoft/powerplatform-actions/unpack-solution@v1
       with:
-        solution-file: out/exported/${{vars.solution_name}}.zip
-        solution-folder: out/solutions/${{vars.solution_name}}
+        solution-file: out/exported/${{vars.SOLUTION_NAME}}.zip
+        solution-folder: out/solutions/${{vars.SOLUTION_NAME}}
         solution-type: 'Unmanaged'
         overwrite-files: true
         
@@ -65,7 +65,7 @@ jobs:
       uses: microsoft/powerplatform-actions/branch-solution@v1
       with:
         solution-folder: out/solutions/newtestsol
-        solution-target-folder: solutions/SCRUM-1-${{vars.solution_name}}
+        solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
