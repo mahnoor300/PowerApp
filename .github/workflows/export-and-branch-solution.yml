@@ -4,10 +4,6 @@ on:
     branches: 
       - main
     inputs:
-      SOLUTION_NAME:
-        description: 'name of the solution to be worked on from Power Platform'
-        type:         string
-        required: true
       solution_exported_folder:
         description: 'folder name for staging the exported solution *do not change*'
         required: true
@@ -52,14 +48,14 @@ jobs:
         app-id: ${{secrets.CLIENT_ID}}
         client-secret: ${{ secrets.PowerPlatformSPN }}
         tenant-id: ${{secrets.TENANT_ID}}
-        solution-name: ${{inputs.SOLUTION_NAME}}
-        solution-output-file: out/exported/${{inputs.SOLUTION_NAME}}.zip
+        solution-name: ${{vars.SOLUTION_NAME}}
+        solution-output-file: out/exported/${{vars.SOLUTION_NAME}}.zip
  
     - name: unpack-solution action
       uses: microsoft/powerplatform-actions/unpack-solution@v1
       with:
-        solution-file: out/exported/${{inputs.SOLUTION_NAME}}.zip
-        solution-folder: out/solutions/${{inputs.SOLUTION_NAME}}
+        solution-file: out/exported/${{vars.SOLUTION_NAME}}.zip
+        solution-folder: out/solutions/${{vars.SOLUTION_NAME}}
         solution-type: 'Unmanaged'
         overwrite-files: true
         
@@ -67,8 +63,8 @@ jobs:
     - name: branch-solution, prepare it for a PullRequest
       uses: microsoft/powerplatform-actions/branch-solution@v1
       with:
-        solution-folder: out/solutions/${{inputs.SOLUTION_NAME}}
-        solution-target-folder: solutions/SCRUM-1-${{inputs.SOLUTION_NAME}}
+        solution-folder: out/solutions/${{vars.SOLUTION_NAME}}
+        solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
