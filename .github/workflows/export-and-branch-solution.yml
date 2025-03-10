@@ -49,14 +49,14 @@ jobs:
         app-id: ${{secrets.CLIENT_ID}}
         client-secret: ${{ secrets.PowerPlatformSPN }}
         tenant-id: ${{secrets.TENANT_ID}}
-        solution-name: ${{inputs.solution_name}}
-        solution-output-file: out/exported/${{inputs.solution_name}}.zip
+        solution-name: ${{vars.solution_name}}
+        solution-output-file: out/exported/${{vars.solution_name}}.zip
  
     - name: unpack-solution action
       uses: microsoft/powerplatform-actions/unpack-solution@v1
       with:
-        solution-file: out/exported/${{inputs.solution_name}}.zip
-        solution-folder: out/solutions/${{inputs.solution_name}}
+        solution-file: out/exported/${{vars.solution_name}}.zip
+        solution-folder: out/solutions/${{vars.solution_name}}
         solution-type: 'Unmanaged'
         overwrite-files: true
         
@@ -65,7 +65,7 @@ jobs:
       uses: microsoft/powerplatform-actions/branch-solution@v1
       with:
         solution-folder: out/solutions/newtestsol
-        solution-target-folder: solutions/SCRUM-1-${{inputs.solution_name}}
+        solution-target-folder: solutions/SCRUM-1-${{vars.solution_name}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
