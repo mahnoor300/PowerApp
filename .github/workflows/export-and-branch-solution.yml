@@ -5,7 +5,6 @@ on:
       solution_name:
         description: 'name of the solution to be worked on from Power Platform'
         required: true
-        default: newtestsol
       solution_exported_folder:
         description: 'folder name for staging the exported solution *do not change*'
         required: true
@@ -50,14 +49,14 @@ jobs:
         app-id: ${{secrets.CLIENT_ID}}
         client-secret: ${{ secrets.PowerPlatformSPN }}
         tenant-id: ${{secrets.TENANT_ID}}
-        solution-name: newtestsol
-        solution-output-file: out/exported/newtestsol.zip
+        solution-name: ${{inputs.solution_name}}
+        solution-output-file: out/exported/${{inputs.solution_name}}.zip
  
     - name: unpack-solution action
       uses: microsoft/powerplatform-actions/unpack-solution@v1
       with:
-        solution-file: out/exported/newtestsol.zip
-        solution-folder: out/solutions/newtestsol
+        solution-file: out/exported/${{inputs.solution_name}}.zip
+        solution-folder: out/solutions/${{inputs.solution_name}}
         solution-type: 'Unmanaged'
         overwrite-files: true
         
@@ -66,7 +65,7 @@ jobs:
       uses: microsoft/powerplatform-actions/branch-solution@v1
       with:
         solution-folder: out/solutions/newtestsol
-        solution-target-folder: solutions/SCRUM-1-powerappsol
+        solution-target-folder: solutions/SCRUM-1-${{inputs.solution_name}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
