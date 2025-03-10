@@ -67,20 +67,21 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
- 
-    # Capture the branch name dynamically based on the push event in PowerShell
+
+    # Capture the dynamic branch name (should be SCRUM-1-devsol-20250310-0802)
     - name: Set dynamic branch name (PowerShell)
       id: set-branch-name
       shell: pwsh
       run: |
         $branch_name = $env:GITHUB_REF -replace 'refs/heads/', ''
         Write-Host "Branch name is: $branch_name"
-        echo "::set-output name=branch_name::$branch_name"
+        # Set dynamic branch name to be used in other steps
+        echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
 
     # Push the new branch to GitHub
     - name: Push the new branch to GitHub
       run: |
-        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} ${{ steps.set-branch-name.outputs.branch_name }}
+        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} ${{ env.BRANCH_NAME }}
 
     # Checkout the main branch
     - name: Checkout the main branch
@@ -88,10 +89,10 @@ jobs:
         git checkout main
         git pull origin main
 
-    # Merge the new branch into main
+    # Merge the dynamically created branch into main
     - name: Merge the new branch into main
       run: |
-        git merge ${{ steps.set-branch-name.outputs.branch_name }}
+        git merge ${{ env.BRANCH_NAME }}
 
     # Push merged changes to main
     - name: Push merged changes to main
