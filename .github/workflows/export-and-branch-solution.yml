@@ -67,25 +67,33 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-    # Capture the branch name dynamically based on the push event
+  # Capture the branch name dynamically based on the push event
     - name: Set dynamic branch name
       id: set-branch-name
-      run: echo "::set-output name=branch_name::$(echo ${GITHUB_REF#refs/heads/})"
+      run: |
+        NEW_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+        echo "Branch name is: $NEW_BRANCH"
+        echo "::set-output name=branch_name::$NEW_BRANCH"
 
-    # Step to create a Pull Request with the dynamically captured branch name
-    - name: Create Pull Request
-      uses: gh actions/create-pull-request@v3.3.0
-      with:
-        token: ${{ secrets.ACCESS_SECRET }}
-        title: 'Merge ${{ steps.set-branch-name.outputs.branch_name }} into main'
-        body: 'This PR merges the branch ${{ steps.set-branch-name.outputs.branch_name }} into the main branch.'
-        head: ${{ steps.set-branch-name.outputs.branch_name }}
-        base: main
+    # Push the new branch to GitHub
+    - name: Push the new branch to GitHub
+      run: |
+        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} ${{ steps.set-branch-name.outputs.branch_name }}
 
-    # Step to merge the Pull Request automatically after creation using github/merge-pull-request
-    - name: Merge Pull Request
-      uses: github/merge-pull-request@v1
-      with:
-        token: ${{ secrets.ACCESS_SECRET }}
+    # Checkout the main branch
+    - name: Checkout the main branch
+      run: |
+        git checkout main
+        git pull origin main
+
+    # Merge the new branch into main
+    - name: Merge the new branch into main
+      run: |
+        git merge ${{ steps.set-branch-name.outputs.branch_name }}
+
+    # Push merged changes to main
+    - name: Push merged changes to main
+      run: |
+        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} main
         pull-request-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
         merge-method: 'merge'  # You can also use 'squash' or 'rebase' if needed
