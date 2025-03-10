@@ -67,5 +67,27 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
+  # Capture the branch name dynamically based on the push event
+    - name: Set dynamic branch name
+      id: set-branch-name
+      run: echo "::set-output name=branch_name::$(echo ${GITHUB_REF#refs/heads/})"
+
+    # Step to create a Pull Request with the dynamically captured branch name
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.ACCESS_SECRET }}
+        title: 'Merge ${{ steps.set-branch-name.outputs.branch_name }} into main'
+        body: 'This PR merges the branch ${{ steps.set-branch-name.outputs.branch_name }} into the main branch.'
+        head: ${{ steps.set-branch-name.outputs.branch_name }}
+        base: main
+
+    # Step to merge the Pull Request automatically after creation
+    - name: Merge Pull Request
+      uses: peter-evans/merge-pull-request@v3
+      with:
+        token: ${{ secrets.ACCESS_SECRET }}
+        pull-request-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
+        merge-method: 'merge'  # You can also use 'squash' or 'rebase' if needed
 
 
