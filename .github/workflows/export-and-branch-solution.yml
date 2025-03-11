@@ -68,16 +68,23 @@ jobs:
         solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
-          # Fetch the most recent branch and merge it into main
+ # Debug: List all branches to verify the branch is created
+    - name: Debug branches
+      run: |
+        git branch -a
+
+    # Fetch the most recent branch and merge it into main
     - name: Fetch and merge the most recent branch
       run: |
         # Fetch all branches
         git fetch --all
+
         # Get the most recently created branch (excluding main)
-        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads | Select-Object -First 1 | Where-Object { $_ -ne "main" }
+        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads | Where-Object { $_ -ne "main" } | Select-Object -First 1
 
         if (-not $RECENT_BRANCH) {
           Write-Error "No recent branch found to merge."
+          git branch -a # Debug: List all branches
           exit 1
         }
 
