@@ -68,45 +68,20 @@ jobs:
         solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
-    # Capture the dynamically generated branch name
-    - name: Set dynamic branch name
-      id: set-branch-name
-      shell: pwsh
-      run: |
-        # Get the current branch name
-        $BRANCH_NAME = git rev-parse --abbrev-ref HEAD
-        echo "BRANCH_NAME=$BRANCH_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "Branch name set to: $BRANCH_NAME"
 
-    # Create a Pull Request
-    - name: Create Pull Request
+    # Capture the dynamically generated branch name
+    - name: Capture generated branch name
+      id: capture-branch
+      run: |
+        echo "BRANCH_NAME=$(echo ${{ steps.branch-solution.outputs.branch_name }})" >> $GITHUB_ENV
+        echo "Branch name: ${{ steps.branch-solution.outputs.branch_name }}"
+
+    # Create Pull Request to main from the dynamically generated branch
+    - name: Create Pull Request to main
       uses: peter-evans/create-pull-request@v4
       with:
         token: ${{ secrets.ACCESS_SECRET }}
-        branch: ${{ env.BRANCH_NAME }}
         base: main
-        title: "Automated PR for ${{vars.SOLUTION_NAME}}"
-        body: "This is an automated pull request for the solution ${{vars.SOLUTION_NAME}}."
-        commit-message: "Automated commit for ${{vars.SOLUTION_NAME}}"
-        delete-branch: true
-
-    # Merge the Pull Request
-    - name: Merge Pull Request
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const { data: pr } = await github.rest.pulls.list({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            head: `${{ env.BRANCH_NAME }}`,
-            base: 'main',
-            state: 'open'
-          });
-          if (pr.length > 0) {
-            await github.rest.pulls.merge({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr[0].number,
-              merge_method: 'merge'
-            });
-          }
+        head: ${{ env.BRANCH_NAME }}
+        title: 'Auto PR from branch ${{ env.BRANCH_NAME }}'
+        body: 'This is an automatically generated pull request from the branch ${{ env.BRANCH_NAME }}.'
