@@ -68,12 +68,13 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-    # Capture the dynamically generated branch name from the branch-solution step
     - name: Set dynamic branch name
       id: set-branch-name
       run: |
-        echo "BRANCH_NAME=${{ steps.branch-solution.outputs.branch-name }}" >> $GITHUB_ENV
-        echo "Branch name set to: ${{ steps.branch-solution.outputs.branch-name }}"
+        # Extract the branch name from the solution-target-folder
+        BRANCH_NAME=$(basename solutions/SCRUM-1-${{vars.SOLUTION_NAME}})
+        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+        echo "Branch name set to: $BRANCH_NAME"
 
     # Push the new branch to GitHub
     - name: Push the new branch to GitHub
