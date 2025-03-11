@@ -88,7 +88,6 @@ jobs:
         Write-Output "Most recent branch: $RECENT_BRANCH"
     
         # Checkout main and merge the recent branch
-        git checkout main
         git merge $RECENT_BRANCH --no-ff -m "Automated merge: Merge $RECENT_BRANCH into main"
 
         # Push the updated main branch
