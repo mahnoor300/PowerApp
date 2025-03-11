@@ -87,21 +87,12 @@ jobs:
     
         Write-Output "Most recent branch: $RECENT_BRANCH"
     
-    
-    # Push the new branch to GitHub
-    - name: Push the new branch to GitHub
-      run: |
-        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} ${{ $RECENT_BRANCH }}
-    # Checkout the main branch
-    - name: Checkout the main branch
-      run: |
+        # Checkout main and merge the recent branch
         git checkout main
-        git pull origin main
-    # Merge the dynamically created branch into main
-    - name: Merge the new branch into main
-      run: |
-        git merge ${{ $RECENT_BRANCH }}
-    # Push merged changes to main
-    - name: Push merged changes to main
-      run: |
-        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} main
+        git merge $RECENT_BRANCH --no-ff -m "Automated merge: Merge $RECENT_BRANCH into main"
+
+        # Push the updated main branch
+        git push origin main
+
+        # Delete the merged branch
+        git push origin --delete $RECENT_BRANCH
