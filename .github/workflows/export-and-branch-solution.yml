@@ -69,11 +69,18 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-    - name: Capture generated branch name
+    - name: Check all outputs from branch-solution
+      run: |
+        echo "branch-solution outputs: ${{ toJson(steps.branch-solution.outputs) }}"
+
+
+    - name: Capture generated branch name from logs
       id: capture-branch
       run: |
-        echo "BRANCH_NAME=${{ steps.branch-solution.outputs.branch_name }}" >> $GITHUB_ENV
-        echo "Branch name: ${{ steps.branch-solution.outputs.branch_name }}"
+        echo "Capturing branch name from logs"
+        BRANCH_NAME=$(grep -oP 'stage solution into branch \K\S+' $GITHUB_WORKSPACE/logs.txt)
+        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+        echo "Captured branch name: $BRANCH_NAME"
 
 
     # Create Pull Request to main from the dynamically generated branch
