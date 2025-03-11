@@ -79,7 +79,7 @@ jobs:
         commit-message: "Automated PR: Export and branch solution"
         title: "Automated PR: Export and branch solution"
         body: "This PR was automatically created to merge the exported solution changes."
-        branch: ${{ steps.branch-solution.outputs.branch-name }}
+        branch: ${{ steps.generate-branch-name.outputs.branch-name }}
         base: main
         delete-branch: true
 
@@ -89,11 +89,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.ACCESS_SECRET }}
       run: |
         PR_NUMBER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${{ steps.branch-solution.outputs.branch-name }}" \
+          "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${{ steps.generate-branch-name.outputs.branch-name }}" \
           | jq -r '.[0].number')
 
         if [ -z "$PR_NUMBER" ]; then
-          echo "No PR found for branch ${{ steps.branch-solution.outputs.branch-name }}"
+          echo "No PR found for branch ${{ steps.generate-branch-name.outputs.branch-name }}"
           exit 1
         fi
 
