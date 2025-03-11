@@ -59,7 +59,7 @@ jobs:
         solution-type: 'Unmanaged'
         overwrite-files: true
 
-     # Branch-solution step generates the branch name dynamically
+   # Branch-solution step generates the branch name dynamically
     - name: branch-solution, prepare it for a PullRequest
       id: branch-solution
       uses: microsoft/powerplatform-actions/branch-solution@v1
@@ -69,13 +69,22 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-    # Capture the dynamically generated branch name from Git logs
-    - name: Set dynamic branch name
-      id: set-branch-name
+    # Explicitly check out the newly created branch
+    - name: Checkout the dynamically created branch
+      id: checkout-branch
       shell: pwsh
       run: |
-        # Get the current branch name
-        $BRANCH_NAME = git rev-parse --abbrev-ref HEAD
+        # Fetch all branches from the remote
+        git fetch --all
+
+        # Get the name of the dynamically created branch
+        $BRANCH_NAME = git branch -r | Select-String -Pattern "SCRUM-1-${{vars.SOLUTION_NAME}}-\d{8}-\d{4}" | ForEach-Object { $_.ToString().Trim() }
+        $BRANCH_NAME = $BRANCH_NAME -replace 'origin/', ''
+
+        # Check out the branch
+        git checkout $BRANCH_NAME
+
+        # Set the branch name as an environment variable
         echo "BRANCH_NAME=$BRANCH_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         echo "Branch name set to: $BRANCH_NAME"
 
