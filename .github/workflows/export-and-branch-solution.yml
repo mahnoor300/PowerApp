@@ -68,12 +68,14 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
+    # Manually capture the branch name from the solution-target-folder
     - name: Set dynamic branch name
       id: set-branch-name
+      shell: pwsh
       run: |
-        # Extract the branch name from the solution-target-folder
-        BRANCH_NAME=$(basename solutions/SCRUM-1-${{vars.SOLUTION_NAME}})
-        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+        # Extract the branch name from the solution-target-folder using PowerShell
+        $BRANCH_NAME = (Get-Item "solutions/SCRUM-1-${{vars.SOLUTION_NAME}}").Name
+        echo "BRANCH_NAME=$BRANCH_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         echo "Branch name set to: $BRANCH_NAME"
 
     # Push the new branch to GitHub
