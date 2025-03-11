@@ -69,35 +69,23 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-    - name: Check all outputs from branch-solution
-      run: |
-        echo "branch-solution outputs: ${{ toJson(steps.branch-solution.outputs) }}"
-        
- 
-    # Capture the dynamically generated branch name from the logs
-    - name: Capture branch name from logs
-      id: capture-branch
-      run: |
-        # Save logs of the previous step to a file
-        $logFile = "$env:GITHUB_WORKSPACE/branch_solution.log"
-        $logContent = Get-Content "$logFile" -Raw
-
-        # Use regex to extract the branch name from the log
-        $branchName = ($logContent -match 'stage solution into branch (\S+)') | Out-Null; $matches[1]
-        
-        if ($branchName) {
-          echo "BRANCH_NAME=$branchName" >> $GITHUB_ENV
-          echo "Captured branch name: $branchName"
-        } else {
-          echo "Error: Could not capture branch name."
-        }
-
-    # Create Pull Request to main from the dynamically generated branch
-    - name: Create Pull Request to main
-      uses: peter-evans/create-pull-request@v4
+   # Create a Pull Request
+    - name: Create Pull Request
+      id: create-pr
+      uses: peter-evans/create-pull-request@v3
       with:
         token: ${{ secrets.ACCESS_SECRET }}
+        commit-message: "Automated PR: Export and branch solution"
+        title: "Automated PR: Export and branch solution"
+        body: "This PR was automatically created to merge the exported solution changes."
+        branch: ${{ steps.branch-solution.outputs.branch-name }}
         base: main
-        head: ${{ env.BRANCH_NAME }}
-        title: 'Auto PR from branch ${{ env.BRANCH_NAME }}'
-        body: 'This is an automatically generated pull request from the branch ${{ env.BRANCH_NAME }}.'
+        delete-branch: true
+
+    # Merge the Pull Request
+    - name: Merge Pull Request
+      uses: peter-evans/merge-pull-request@v1
+      with:
+        token: ${{ secrets.ACCESS_SECRET }}
+        pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
+        merge-method: merge
