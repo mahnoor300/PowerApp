@@ -59,25 +59,7 @@ jobs:
         solution-type: 'Unmanaged'
         overwrite-files: true
 
-    # Generate a dynamic branch name
-    - name: Generate branch name
-      id: generate-branch-name
-      run: |
-        BRANCH_NAME="solution-branch-$(date +%s)"
-        echo "Generated branch name: $BRANCH_NAME"
-        echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
-
-    # Debug branch name
-    - name: Debug branch name
-      run: |
-        echo "Branch name: ${{ steps.generate-branch-name.outputs.branch-name }}"
-
-    # Create branch manually
-    - name: Create branch
-      run: |
-        git checkout -b ${{ steps.generate-branch-name.outputs.branch-name }}
-
-    # Branch-solution step uses the generated branch name
+   # Branch-solution step generates the branch name dynamically
     - name: branch-solution, prepare it for a PullRequest
       id: branch-solution
       uses: microsoft/powerplatform-actions/branch-solution@v1
@@ -86,43 +68,17 @@ jobs:
         solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
-
-    # Create a Pull Request
-    - name: Create Pull Request
-      id: create-pr
-      uses: peter-evans/create-pull-request@v3
-      with:
-        token: ${{ secrets.ACCESS_SECRET }}
-        commit-message: "Automated PR: Export and branch solution"
-        title: "Automated PR: Export and branch solution"
-        body: "This PR was automatically created to merge the exported solution changes."
-        branch: ${{ steps.generate-branch-name.outputs.branch-name }}
-        base: main
-        delete-branch: true
-
-    # Merge the Pull Request using GitHub API
-    - name: Merge Pull Request
-      env:
-        GITHUB_TOKEN: ${{ secrets.ACCESS_SECRET }}
+    - name: Fetch and merge the most recent branch
       run: |
-        PR_NUMBER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${{ steps.generate-branch-name.outputs.branch-name }}" \
-          | jq -r '.[0].number')
+        # Fetch all branches
+        git fetch --all
 
-        if [ -z "$PR_NUMBER" ]; then
-          echo "No PR found for branch ${{ steps.generate-branch-name.outputs.branch-name }}"
+        # Get the most recently created branch (excluding main)
+        RECENT_BRANCH=$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads | grep -v "main" | head -n 1)
+
+        if [ -z "$RECENT_BRANCH" ]; then
+          echo "No recent branch found to merge."
           exit 1
         fi
 
-        echo "Merging PR #$PR_NUMBER"
-        curl -s -X PUT -H "Authorization: token $GITHUB_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d '{"commit_title": "Automated PR: Export and branch solution", "merge_method": "merge"}' \
-          "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/merge"
-
-        if [ $? -eq 0 ]; then
-          echo "PR #$PR_NUMBER merged successfully"
-        else
-          echo "Failed to merge PR #$PR_NUMBER"
-          exit 1
-        fi
+        echo "Most recent branch: $RECENT_BRANCH"
