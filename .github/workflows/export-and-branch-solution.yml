@@ -59,7 +59,24 @@ jobs:
         solution-type: 'Unmanaged'
         overwrite-files: true
 
-   # Branch-solution step generates the branch name dynamically
+    # Generate a dynamic branch name
+    - name: Generate branch name
+      id: generate-branch-name
+      run: |
+        BRANCH_NAME="solution-branch-$(date +%s)"
+        echo "Generated branch name: $BRANCH_NAME"
+        echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+    # Debug branch name
+    - name: Debug branch name
+      run: echo "Branch name: ${{ steps.generate-branch-name.outputs.branch-name }}"
+
+    # Create branch manually
+    - name: Create branch
+      run: |
+        git checkout -b ${{ steps.generate-branch-name.outputs.branch-name }}
+
+    # Branch-solution step uses the generated branch name
     - name: branch-solution, prepare it for a PullRequest
       id: branch-solution
       uses: microsoft/powerplatform-actions/branch-solution@v1
@@ -68,7 +85,6 @@ jobs:
         solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
-
 
     # Create a Pull Request
     - name: Create Pull Request
