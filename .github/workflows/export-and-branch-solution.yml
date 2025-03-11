@@ -59,24 +59,7 @@ jobs:
         solution-type: 'Unmanaged'
         overwrite-files: true
 
-    # Generate a dynamic branch name
-    - name: Generate branch name
-      id: generate-branch-name
-      run: |
-        BRANCH_NAME="solution-branch-$(date +%s)"
-        echo "Generated branch name: $BRANCH_NAME"
-        echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
-
-    # Debug branch name
-    - name: Debug branch name
-      run: echo "Branch name: ${{ steps.generate-branch-name.outputs.branch-name }}"
-
-    # Create branch manually
-    - name: Create branch
-      run: |
-        git checkout -b ${{ steps.generate-branch-name.outputs.branch-name }}
-
-    # Branch-solution step uses the generated branch name
+   # Branch-solution step generates the branch name dynamically
     - name: branch-solution, prepare it for a PullRequest
       id: branch-solution
       uses: microsoft/powerplatform-actions/branch-solution@v1
@@ -86,42 +69,26 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-    # Create a Pull Request
-    - name: Create Pull Request
-      id: create-pr
-      uses: peter-evans/create-pull-request@v3
+    - name: Check all outputs from branch-solution
+      run: |
+        echo "branch-solution outputs: ${{ toJson(steps.branch-solution.outputs) }}"
+    - name: Capture generated branch name from logs
+      id: capture-branch
+      run: |
+        # Use PowerShell to extract the branch name from the logs
+        $logFile = "$env:GITHUB_WORKSPACE\logs.txt"  # Path to logs file
+        $logContent = Get-Content $logFile
+        $branchName = ($logContent | Select-String -Pattern 'stage solution into branch (\S+)' | ForEach-Object { $_.Matches.Groups[1].Value }) -join ''
+        
+        # Output the branch name
+        echo "BRANCH_NAME=$branchName" >> $GITHUB_ENV
+        echo "Captured branch name: $branchName"
+    # Create Pull Request to main from the dynamically generated branch
+    - name: Create Pull Request to main
+      uses: peter-evans/create-pull-request@v4
       with:
         token: ${{ secrets.ACCESS_SECRET }}
-        commit-message: "Automated PR: Export and branch solution"
-        title: "Automated PR: Export and branch solution"
-        body: "This PR was automatically created to merge the exported solution changes."
-        branch: ${{ steps.generate-branch-name.outputs.branch-name }}
         base: main
-        delete-branch: true
-
-    # Merge the Pull Request using GitHub API
-    - name: Merge Pull Request
-      env:
-        GITHUB_TOKEN: ${{ secrets.ACCESS_SECRET }}
-      run: |
-        PR_NUMBER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${{ steps.generate-branch-name.outputs.branch-name }}" \
-          | jq -r '.[0].number')
-
-        if [ -z "$PR_NUMBER" ]; then
-          echo "No PR found for branch ${{ steps.generate-branch-name.outputs.branch-name }}"
-          exit 1
-        fi
-
-        echo "Merging PR #$PR_NUMBER"
-        curl -s -X PUT -H "Authorization: token $GITHUB_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d '{"commit_title": "Automated PR: Export and branch solution", "merge_method": "merge"}' \
-          "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/merge"
-
-        if [ $? -eq 0 ]; then
-          echo "PR #$PR_NUMBER merged successfully"
-        else
-          echo "Failed to merge PR #$PR_NUMBER"
-          exit 1
-        fi
+        head: ${{ env.BRANCH_NAME }}
+        title: 'Auto PR from branch ${{ env.BRANCH_NAME }}'
+        body: 'This is an automatically generated pull request from the branch ${{ env.BRANCH_NAME }}.'
