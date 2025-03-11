@@ -68,43 +68,45 @@ jobs:
         solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
-
-    # Explicitly check out the newly created branch
-    - name: Checkout the dynamically created branch
-      id: checkout-branch
+    # Capture the dynamically generated branch name
+    - name: Set dynamic branch name
+      id: set-branch-name
       shell: pwsh
       run: |
-        # Fetch all branches from the remote
-        git fetch --all
-
-        # Get the name of the dynamically created branch
-        $BRANCH_NAME = git branch -r | Select-String -Pattern "SCRUM-1-${{vars.SOLUTION_NAME}}-\d{8}-\d{4}" | ForEach-Object { $_.ToString().Trim() }
-        $BRANCH_NAME = $BRANCH_NAME -replace 'origin/', ''
-
-        # Check out the branch
-        git checkout $BRANCH_NAME
-
-        # Set the branch name as an environment variable
+        # Get the current branch name
+        $BRANCH_NAME = git rev-parse --abbrev-ref HEAD
         echo "BRANCH_NAME=$BRANCH_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         echo "Branch name set to: $BRANCH_NAME"
 
-    # Push the new branch to GitHub
-    - name: Push the new branch to GitHub
-      run: |
-        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} ${{ env.BRANCH_NAME }}
+    # Create a Pull Request
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.ACCESS_SECRET }}
+        branch: ${{ env.BRANCH_NAME }}
+        base: main
+        title: "Automated PR for ${{vars.SOLUTION_NAME}}"
+        body: "This is an automated pull request for the solution ${{vars.SOLUTION_NAME}}."
+        commit-message: "Automated commit for ${{vars.SOLUTION_NAME}}"
+        delete-branch: true
 
-    # Checkout the main branch
-    - name: Checkout the main branch
-      run: |
-        git checkout main
-        git pull origin main
-
-    # Merge the dynamically created branch into main
-    - name: Merge the new branch into main
-      run: |
-        git merge ${{ env.BRANCH_NAME }}
-
-    # Push merged changes to main
-    - name: Push merged changes to main
-      run: |
-        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} main
+    # Merge the Pull Request
+    - name: Merge Pull Request
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: pr } = await github.rest.pulls.list({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            head: `${{ env.BRANCH_NAME }}`,
+            base: 'main',
+            state: 'open'
+          });
+          if (pr.length > 0) {
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr[0].number,
+              merge_method: 'merge'
+            });
+          }
