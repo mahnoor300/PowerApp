@@ -68,34 +68,31 @@ jobs:
         solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
- # Debug: List all branches to verify the branch is created
-    - name: Debug branches
-      run: |
-        git branch -a
-
-    # Fetch the most recent branch and merge it into main
     - name: Fetch and merge the most recent branch
       run: |
-        # Fetch all branches
+        # Fetch all branches from the remote repository
         git fetch --all
-
-        # Get the most recently created branch (excluding main)
-        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads | Where-Object { $_ -ne "main" } | Select-Object -First 1
-
+    
+        # Get the most recently created branch (excluding main) from the remote repository
+        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne "origin/main" } | Select-Object -First 1
+    
         if (-not $RECENT_BRANCH) {
           Write-Error "No recent branch found to merge."
           git branch -a # Debug: List all branches
           exit 1
         }
-
+    
+        # Remove the 'origin/' prefix from the branch name
+        $RECENT_BRANCH = $RECENT_BRANCH -replace 'origin/', ''
+    
         Write-Output "Most recent branch: $RECENT_BRANCH"
-
+    
         # Checkout main and merge the recent branch
         git checkout main
         git merge $RECENT_BRANCH --no-ff -m "Automated merge: Merge $RECENT_BRANCH into main"
-
+    
         # Push the updated main branch
         git push origin main
-
+    
         # Delete the merged branch
         git push origin --delete $RECENT_BRANCH
