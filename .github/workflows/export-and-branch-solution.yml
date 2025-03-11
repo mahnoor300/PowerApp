@@ -69,7 +69,8 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-   # Create a Pull Request
+
+    # Create a Pull Request
     - name: Create Pull Request
       id: create-pr
       uses: peter-evans/create-pull-request@v3
@@ -82,10 +83,29 @@ jobs:
         base: main
         delete-branch: true
 
-    # Merge the Pull Request
+    # Merge the Pull Request using GitHub API
     - name: Merge Pull Request
-      uses: peter-evans/merge-pull-request@v1
-      with:
-        token: ${{ secrets.ACCESS_SECRET }}
-        pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
-        merge-method: merge
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACCESS_SECRET }}
+      run: |
+        PR_NUMBER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${{ steps.branch-solution.outputs.branch-name }}" \
+          | jq -r '.[0].number')
+
+        if [ -z "$PR_NUMBER" ]; then
+          echo "No PR found for branch ${{ steps.branch-solution.outputs.branch-name }}"
+          exit 1
+        fi
+
+        echo "Merging PR #$PR_NUMBER"
+        curl -s -X PUT -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d '{"commit_title": "Automated PR: Export and branch solution", "merge_method": "merge"}' \
+          "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/merge"
+
+        if [ $? -eq 0 ]; then
+          echo "PR #$PR_NUMBER merged successfully"
+        else
+          echo "Failed to merge PR #$PR_NUMBER"
+          exit 1
+        fi
