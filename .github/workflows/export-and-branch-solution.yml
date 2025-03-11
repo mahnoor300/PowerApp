@@ -69,12 +69,12 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-    # Capture the dynamically generated branch name
     - name: Capture generated branch name
       id: capture-branch
       run: |
-        echo "BRANCH_NAME=$(echo ${{ steps.branch-solution.outputs.branch_name }})" >> $GITHUB_ENV
+        echo "BRANCH_NAME=${{ steps.branch-solution.outputs.branch_name }}" >> $GITHUB_ENV
         echo "Branch name: ${{ steps.branch-solution.outputs.branch_name }}"
+
 
     # Create Pull Request to main from the dynamically generated branch
     - name: Create Pull Request to main
