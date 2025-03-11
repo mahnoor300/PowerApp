@@ -73,19 +73,25 @@ jobs:
       run: |
         echo "branch-solution outputs: ${{ toJson(steps.branch-solution.outputs) }}"
         
-   # Capture branch name from logs using a regex pattern in PowerShell
-    - name: Capture branch name from the previous step's output
+ 
+    # Capture the dynamically generated branch name from the logs
+    - name: Capture branch name from logs
       id: capture-branch
       run: |
-        # Use the output of the 'branch-solution' step to extract the branch name
-        $branchName = "${{ steps.branch-solution.outputs.branch-name }}"
+        # Save logs of the previous step to a file
+        $logFile = "$env:GITHUB_WORKSPACE/branch_solution.log"
+        $logContent = Get-Content "$logFile" -Raw
+
+        # Use regex to extract the branch name from the log
+        $branchName = ($logContent -match 'stage solution into branch (\S+)') | Out-Null; $matches[1]
         
-        # Check if the branch name is captured successfully
-        echo "Branch name captured: $branchName"
-        
-        # Set the captured branch name as an environment variable
-        echo "BRANCH_NAME=$branchName" >> $GITHUB_ENV
-        
+        if ($branchName) {
+          echo "BRANCH_NAME=$branchName" >> $GITHUB_ENV
+          echo "Captured branch name: $branchName"
+        } else {
+          echo "Error: Could not capture branch name."
+        }
+
     # Create Pull Request to main from the dynamically generated branch
     - name: Create Pull Request to main
       uses: peter-evans/create-pull-request@v4
