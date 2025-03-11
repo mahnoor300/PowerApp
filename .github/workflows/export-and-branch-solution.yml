@@ -68,25 +68,30 @@ jobs:
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
 
-    - name: Set dynamic branch name (from branch-solution)
+    # Capture the dynamically generated branch name from the branch-solution step
+    - name: Set dynamic branch name
       id: set-branch-name
       run: |
-          echo "BRANCH_NAME=SCRUM-1-${{ vars.SOLUTION_NAME }}-${{ github.run_id }}" >> $GITHUB_ENV
-          echo "Branch name set to: SCRUM-1-${{ vars.SOLUTION_NAME }}-${{ github.run_id }}"
+        echo "BRANCH_NAME=${{ steps.branch-solution.outputs.branch-name }}" >> $GITHUB_ENV
+        echo "Branch name set to: ${{ steps.branch-solution.outputs.branch-name }}"
 
+    # Push the new branch to GitHub
     - name: Push the new branch to GitHub
       run: |
-          git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} ${{ env.BRANCH_NAME }}
+        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} ${{ env.BRANCH_NAME }}
 
+    # Checkout the main branch
     - name: Checkout the main branch
       run: |
-          git checkout main
-          git pull origin main
+        git checkout main
+        git pull origin main
 
+    # Merge the dynamically created branch into main
     - name: Merge the new branch into main
       run: |
-          git merge ${{ env.BRANCH_NAME }} --no-ff
+        git merge ${{ env.BRANCH_NAME }}
 
+    # Push merged changes to main
     - name: Push merged changes to main
       run: |
-          git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} main
+        git push https://x-access-token:${{ secrets.ACCESS_SECRET }}@github.com/${{ github.repository }} main
