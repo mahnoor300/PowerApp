@@ -91,10 +91,20 @@ jobs:
         Write-Output "Most recent branch: $RECENT_BRANCH"
 
 
-  
-    
+    - name: Create Pull Request
+      id: create_pr
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.ACCESS_SECRET }}
+        commit-message: "Merging solution branch"
+        title: "Automated PR for solution branch"
+        body: "This PR merges the latest solution export changes."
+        branch: ${{ env.RECENT_BRANCH }}
+        base: main
+        delete-branch: false  # Keep it until merged
+
     - name: Merge Pull Request
       run: |
-        gh pr merge --auto --squash --delete-branch ${{ env.RECENT_BRANCH}}
+        gh pr merge --auto --squash --delete-branch ${{ steps.create_pr.outputs.pull-request-number }}
       env:
         GH_TOKEN: ${{ secrets.ACCESS_SECRET }}
