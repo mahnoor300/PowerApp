@@ -82,14 +82,13 @@ jobs:
     
         Write-Output "Most recent branch: $RECENT_BRANCH"
     
-        # Checkout main
-        git checkout main
-    
-        # Merge the recent branch using the full remote branch name
-        git merge $RECENT_BRANCH --no-ff -m "Automated merge: Merge $RECENT_BRANCH into main"
-    
-        # Push the updated main branch
-        git push origin main
-    
-        # Delete the merged branch
-        git push origin --delete $RECENT_BRANCH
+# Create Pull Request to main from the dynamically generated branch
+    - name: Create Pull Request to main
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.ACCESS_SECRET }}
+        base: main
+        head: $RECENT_BRANCH
+        title: 'Auto PR from branch ${{ $RECENT_BRANCH}}'
+        body: 'This is an automatically generated pull request from the branch ${{ $RECENT_BRANCH  }}.'
+
