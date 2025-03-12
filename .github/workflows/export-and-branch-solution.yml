@@ -85,7 +85,9 @@ jobs:
     
         $CLEAN_BRANCH = $RECENT_BRANCH -replace '^origin/', ''
 
-        echo "RECENT_BRANCH=$RECENT_BRANCH" | Out-File -FilePath $env:GITHUB_ENV -Append
+        # Store in GITHUB_ENV
+        echo "RECENT_BRANCH=$CLEAN_BRANCH" | Out-File -FilePath $env:GITHUB_ENV -Append
+
         Write-Output "Most recent branch: $RECENT_BRANCH"
 
 
