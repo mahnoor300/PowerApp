@@ -71,13 +71,6 @@ jobs:
         allow-empty-commit: true
 
 
-    - name: Fetch and determine the most recent branch
-      id: recent_branch
-      run: |
-        git fetch --all
-        echo "RECENT_BRANCH=$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne 'origin/main' } | Select-Object -First 1 | ForEach-Object { $_ -replace 'origin/', '' })" >> $GITHUB_ENV
-      shell: pwsh
-
     - name: Fetch and merge the most recent branch
       run: |
         git fetch --all
@@ -90,7 +83,9 @@ jobs:
           exit 1
         }
     
-        Write-Output "Most recent branch: $RECENT_BRANCH"
+        #Write-Output "Most recent branch: $RECENT_BRANCH"
+        echo "RECENT_BRANCH=$RECENT_BRANCH" | Out-File -FilePath $env:GITHUB_ENV -Append
+
   
     
     - name: Merge Pull Request
