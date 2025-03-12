@@ -70,18 +70,11 @@ jobs:
         allow-empty-commit: true
 
 
-    - name: Fetch and determine the most recent branch
-      id: recent_branch
-      run: |
-        git fetch --all
-        echo "RECENT_BRANCH=$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne 'origin/main' } | Select-Object -First 1 | ForEach-Object { $_ -replace 'origin/', '' })" >> $GITHUB_ENV
-      shell: pwsh
-
     - name: Fetch and merge the most recent branch
       run: |
         git fetch --all
   
-        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne "origin/main" } | Select-Object -First 1
+        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne "origin/main" } | Select-Object -First 1 >> $GITHUB_ENV
   
         if (-not $RECENT_BRANCH) {
           Write-Error "No recent branch found to merge."
