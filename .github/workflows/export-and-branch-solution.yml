@@ -68,6 +68,15 @@ jobs:
         solution-target-folder: solutions/SCRUM-1-${{vars.SOLUTION_NAME}}
         repo-token: ${{ secrets.ACCESS_SECRET }}
         allow-empty-commit: true
+
+
+    - name: Fetch and determine the most recent branch
+      id: recent_branch
+      run: |
+        git fetch --all
+        echo "RECENT_BRANCH=$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne 'origin/main' } | Select-Object -First 1 | ForEach-Object { $_ -replace 'origin/', '' })" >> $GITHUB_ENV
+      shell: pwsh
+
     - name: Fetch and merge the most recent branch
       run: |
         git fetch --all
@@ -81,6 +90,7 @@ jobs:
         }
     
         Write-Output "Most recent branch: $RECENT_BRANCH"
+  
     
 # Create Pull Request to main from the dynamically generated branch
     - name: Create Pull Request to main
