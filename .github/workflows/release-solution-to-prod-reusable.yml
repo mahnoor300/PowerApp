@@ -96,13 +96,38 @@ jobs:
         name: managedSolutions
         path: ${{ inputs.solution_shipping_folder}}/
 
+  send-approval-notification:
+    needs: [convert-to-managed]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Notify CODEOWNERS for Approval
+      run: |
+        curl -X POST \
+          -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d "{\"body\": \"@CODEOWNERS Approval required for release to production. Please approve.\"}" \
+          "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments"
+
+  wait-for-approval:
+    needs: [send-approval-notification]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Pause execution for manual approval
+      uses: hmarr/auto-approve-action@v3
+      with:
+        github-token: ${{ secrets.GH_TOKEN }}
+    - name: Await manual approval
+      run: |
+        echo "Waiting for approval..."
+        sleep 600  # Wait for 10 minutes before timing out
+
   release-to-staging:
-    needs: [ convert-to-managed ]
+    needs: [wait-for-approval]
     runs-on: windows-latest
     env:
       RUNNER_DEBUG: 1
     environment:
-      name: staging  # This references the environment where approval is required
+      name: staging  
     steps:
     - uses: actions/checkout@v2
       with:
