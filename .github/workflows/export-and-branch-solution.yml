@@ -1,3 +1,4 @@
+
 name: export-and-branch-solution
 on:
   push:
@@ -70,11 +71,18 @@ jobs:
         allow-empty-commit: true
 
 
+    - name: Fetch and determine the most recent branch
+      id: recent_branch
+      run: |
+        git fetch --all
+        echo "RECENT_BRANCH=$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne 'origin/main' } | Select-Object -First 1 | ForEach-Object { $_ -replace 'origin/', '' })" >> $GITHUB_ENV
+      shell: pwsh
+
     - name: Fetch and merge the most recent branch
       run: |
         git fetch --all
   
-        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne "origin/main" } | Select-Object -First 1 >> $GITHUB_ENV
+        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne "origin/main" } | Select-Object -First 1
   
         if (-not $RECENT_BRANCH) {
           Write-Error "No recent branch found to merge."
@@ -85,13 +93,8 @@ jobs:
         Write-Output "Most recent branch: $RECENT_BRANCH"
   
     
-# Create Pull Request to main from the dynamically generated branch
-    - name: Create Pull Request to main
-      uses: peter-evans/create-pull-request@v4
-      with:
-        token: ${{ secrets.ACCESS_SECRET }}
-        base: main
-        head: ${{env.RECENT_BRANCH}}
-        title: 'Auto PR from branch ${{ env.RECENT_BRANCH}}'
-        body: 'This is an automatically generated pull request from the branch ${{ env.RECENT_BRANCH  }}.'
-
+    - name: Merge Pull Request
+      run: |
+        gh pr merge --auto --squash --delete-branch ${{ env.RECENT_BRANCH}}
+      env:
+        GH_TOKEN: ${{ secrets.ACCESS_SECRET }}
