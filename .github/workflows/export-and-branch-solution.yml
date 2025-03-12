@@ -107,6 +107,6 @@ jobs:
 
     - name: Merge Pull Request
       run: |
-        gh pr merge --auto --squash --delete-branch ${{ steps.create_pr.outputs.pull-request-number }}
+        gh pr merge --auto --squash --delete-branch ${{ env.RECENT_BRANCH }}
       env:
         GH_TOKEN: ${{ secrets.ACCESS_SECRET }}
