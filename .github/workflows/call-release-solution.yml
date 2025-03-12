@@ -1,12 +1,13 @@
 
 name: Call Release Solution Workflow
 on:
-  push:
-    branches:
-      - main
-  release:
-    types:
-      - published
+#  push:
+#    branches:
+#      - main
+#  release:
+#    types:
+#      - published
+  workflow_dispatch:
 jobs:
 
   call-release-workflow:
