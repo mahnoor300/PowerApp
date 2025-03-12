@@ -98,7 +98,7 @@ jobs:
       with:
         token: ${{ secrets.ACCESS_SECRET }}
         base: main
-        head: ${{env.$RECENT_BRANCH}}
-        title: 'Auto PR from branch ${{ env.$RECENT_BRANCH}}'
-        body: 'This is an automatically generated pull request from the branch ${{ env.$RECENT_BRANCH  }}.'
+        head: ${{env.RECENT_BRANCH}}
+        title: 'Auto PR from branch ${{ env.RECENT_BRANCH}}'
+        body: 'This is an automatically generated pull request from the branch ${{ env.RECENT_BRANCH  }}.'
 
