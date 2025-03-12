@@ -95,6 +95,32 @@ jobs:
       with:
         name: managedSolutions
         path: ${{ inputs.solution_shipping_folder}}/
+  wait-for-codeowner-approval:
+    needs: [convert-to-managed]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for CodeOwner Approval
+        id: check-approval
+        run: |
+          PR_NUMBER=$(curl -s -H "Authorization: token ${{ secrets.ACCESS_SECRET }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?head=update-solution-${{ inputs.solution_name }}")
+ 
+          echo "Checking approval for PR #$PR_NUMBER"
+ 
+          while true; do
+            REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.ACCESS_SECRET }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews")
+ 
+            APPROVED=$(echo "$REVIEWS" | jq -r '.[] | select(.state=="APPROVED") | .user.login')
+ 
+            if [[ ! -z "$APPROVED" ]]; then
+              echo "PR Approved by: $APPROVED"
+              break
+            else
+              echo "Waiting for Code Owner approval..."
+              sleep 30  # Check every 30 seconds
+            fi
+          done
 
   send-approval-notification:
     needs: [convert-to-managed]
@@ -107,18 +133,10 @@ jobs:
           -H "Accept: application/vnd.github.v3+json" \
           -d "{\"body\": \"@CODEOWNERS Approval required for release to production. Please approve.\"}" \
           "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments"
-  wait-for-approval:
-    needs: [send-approval-notification]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Pause execution for manual approval
-        uses: hmarr/auto-approve-action@v3
-        with:
-          github-token: ${{ secrets.ACCESS_SECRET }}
-          pull-request-number: ${{ github.event.pull_request.number }}  # Add this line
+
 
   release-to-staging:
-    needs: [wait-for-approval]
+    needs: [wait-for-codeowner-approval]
     runs-on: windows-latest
     env:
       RUNNER_DEBUG: 1
