@@ -110,19 +110,20 @@ jobs:
    #      gh pr merge --auto --squash --delete-branch ${{ env.RECENT_BRANCH }}
    #    env:
    #      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        
+            
     - name: Trigger Release Workflow
       uses: actions/github-script@v6
       with:
         github-token: ${{ secrets.GH_TOKEN }}
         script: |
-          await github.rest.actions.createWorkflowDispatch({
+          const { data } = await github.rest.actions.createWorkflowDispatch({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            workflow_id: "call-release-solution.yml",  # Ensure this matches the file name
-            ref: "main",
+            workflow_id: 'call-release-solution.yml',  # Ensure this matches the file name
+            ref: 'main',
             inputs: {
-              solution_name: "Azure"
+              solution_name: 'Azure'
             }
           });
+          console.log(data);
 
