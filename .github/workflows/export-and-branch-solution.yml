@@ -3,7 +3,7 @@ name: export-and-branch-solution
 on:
   workflow_dispatch:
     inputs:
-      SOLUTION_NAME:
+      solution_name:
         description: 'name of the solution'
         required: true
 
@@ -51,14 +51,14 @@ jobs:
    #      app-id: ${{secrets.CLIENT_ID}}
    #      client-secret: ${{ secrets.PowerPlatformSPN }}
    #      tenant-id: ${{secrets.TENANT_ID}}
-   #      solution-name: ${{inputs.SOLUTION_NAME}}
-   #      solution-output-file: out/exported/${{inputs.SOLUTION_NAME}}.zip
+   #      solution-name: ${{inputs.solution_name}}
+   #      solution-output-file: out/exported/${{inputs.solution_name}}.zip
  
    #  - name: unpack-solution action
    #    uses: microsoft/powerplatform-actions/unpack-solution@v1
    #    with:
-   #      solution-file: out/exported/${{inputs.SOLUTION_NAME}}.zip
-   #      solution-folder: out/solutions/${{inputs.SOLUTION_NAME}}
+   #      solution-file: out/exported/${{inputs.solution_name}}.zip
+   #      solution-folder: out/solutions/${{inputs.solution_name}}
    #      solution-type: 'Unmanaged'
    #      overwrite-files: true
 
@@ -67,8 +67,8 @@ jobs:
    #    id: branch-solution
    #    uses: microsoft/powerplatform-actions/branch-solution@v1
    #    with:
-   #      solution-folder: out/solutions/${{inputs.SOLUTION_NAME}}
-   #      solution-target-folder: solutions/SCRUM-1-${{inputs.SOLUTION_NAME}}
+   #      solution-folder: out/solutions/${{inputs.solution_name}}
+   #      solution-target-folder: solutions/SCRUM-1-${{inputs.solution_name}}
    #      repo-token: ${{ secrets.GH_TOKEN }}
    #      allow-empty-commit: true
 
@@ -122,7 +122,7 @@ jobs:
             workflow_id: "call-release-solution.yml",
             ref: "main",
             inputs: {
-              solution_name: "${{ inputs.SOLUTION_NAME }}"
+              solution_name: "${{ inputs.solution_name }}"
             }
           });
 
