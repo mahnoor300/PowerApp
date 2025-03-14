@@ -110,3 +110,19 @@ jobs:
         gh pr merge --auto --squash --delete-branch ${{ env.RECENT_BRANCH }}
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        
+    - name: Trigger Release Workflow
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GH_TOKEN }}
+        script: |
+          await github.rest.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: "release-solution-to-prod-reusable.yml",
+            ref: "main",
+            inputs: {
+              solution_name: "${{ inputs.SOLUTION_NAME }}"
+            }
+          });
+
