@@ -2,6 +2,11 @@
 name: Call Release Solution Workflow
 on:
   workflow_dispatch:
+  inputs:
+    solution_name:
+      description: "Solution Name"
+      required: true
+      type: string
 
   push:
     branches:
