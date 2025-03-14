@@ -44,72 +44,72 @@ jobs:
         client-secret: ${{secrets.PowerPlatformSPN}}
         tenant-id: ${{secrets.TENANT_ID}}
  
-    - name: export-solution action
-      uses: microsoft/powerplatform-actions/export-solution@v1
-      with:
-        environment-url: ${{secrets.ENVIRONMENT_URL}}
-        app-id: ${{secrets.CLIENT_ID}}
-        client-secret: ${{ secrets.PowerPlatformSPN }}
-        tenant-id: ${{secrets.TENANT_ID}}
-        solution-name: ${{inputs.SOLUTION_NAME}}
-        solution-output-file: out/exported/${{inputs.SOLUTION_NAME}}.zip
+   #  - name: export-solution action
+   #    uses: microsoft/powerplatform-actions/export-solution@v1
+   #    with:
+   #      environment-url: ${{secrets.ENVIRONMENT_URL}}
+   #      app-id: ${{secrets.CLIENT_ID}}
+   #      client-secret: ${{ secrets.PowerPlatformSPN }}
+   #      tenant-id: ${{secrets.TENANT_ID}}
+   #      solution-name: ${{inputs.SOLUTION_NAME}}
+   #      solution-output-file: out/exported/${{inputs.SOLUTION_NAME}}.zip
  
-    - name: unpack-solution action
-      uses: microsoft/powerplatform-actions/unpack-solution@v1
-      with:
-        solution-file: out/exported/${{inputs.SOLUTION_NAME}}.zip
-        solution-folder: out/solutions/${{inputs.SOLUTION_NAME}}
-        solution-type: 'Unmanaged'
-        overwrite-files: true
+   #  - name: unpack-solution action
+   #    uses: microsoft/powerplatform-actions/unpack-solution@v1
+   #    with:
+   #      solution-file: out/exported/${{inputs.SOLUTION_NAME}}.zip
+   #      solution-folder: out/solutions/${{inputs.SOLUTION_NAME}}
+   #      solution-type: 'Unmanaged'
+   #      overwrite-files: true
 
-   # Branch-solution step generates the branch name dynamically
-    - name: branch-solution, prepare it for a PullRequest
-      id: branch-solution
-      uses: microsoft/powerplatform-actions/branch-solution@v1
-      with:
-        solution-folder: out/solutions/${{inputs.SOLUTION_NAME}}
-        solution-target-folder: solutions/SCRUM-1-${{inputs.SOLUTION_NAME}}
-        repo-token: ${{ secrets.GH_TOKEN }}
-        allow-empty-commit: true
+   # # Branch-solution step generates the branch name dynamically
+   #  - name: branch-solution, prepare it for a PullRequest
+   #    id: branch-solution
+   #    uses: microsoft/powerplatform-actions/branch-solution@v1
+   #    with:
+   #      solution-folder: out/solutions/${{inputs.SOLUTION_NAME}}
+   #      solution-target-folder: solutions/SCRUM-1-${{inputs.SOLUTION_NAME}}
+   #      repo-token: ${{ secrets.GH_TOKEN }}
+   #      allow-empty-commit: true
 
 
-    - name: Fetch and merge the most recent branch
-      run: |
-        git fetch --all
+   #  - name: Fetch and merge the most recent branch
+   #    run: |
+   #      git fetch --all
   
-        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne "origin/main" } | Select-Object -First 1
+   #      $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne "origin/main" } | Select-Object -First 1
   
-        if (-not $RECENT_BRANCH) {
-          Write-Error "No recent branch found to merge."
-          git branch -a # Debug: List all branches
-          exit 1
-        }
+   #      if (-not $RECENT_BRANCH) {
+   #        Write-Error "No recent branch found to merge."
+   #        git branch -a # Debug: List all branches
+   #        exit 1
+   #      }
     
-        $CLEAN_BRANCH = $RECENT_BRANCH -replace '^origin/', ''
+   #      $CLEAN_BRANCH = $RECENT_BRANCH -replace '^origin/', ''
 
-        # Store in GITHUB_ENV
-        echo "RECENT_BRANCH=$CLEAN_BRANCH" | Out-File -FilePath $env:GITHUB_ENV -Append
+   #      # Store in GITHUB_ENV
+   #      echo "RECENT_BRANCH=$CLEAN_BRANCH" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-        Write-Output "Most recent branch: $RECENT_BRANCH"
+   #      Write-Output "Most recent branch: $RECENT_BRANCH"
 
 
-    - name: Create Pull Request
-      id: create_pr
-      uses: peter-evans/create-pull-request@v5
-      with:
-        token: ${{ secrets.GH_TOKEN }}
-        commit-message: "Merging solution branch"
-        title: "Automated PR for solution branch"
-        body: "This PR merges the latest solution export changes."
-        branch: ${{ env.RECENT_BRANCH }}
-        base: main
-        delete-branch: false  # Keep it until merged
+   #  - name: Create Pull Request
+   #    id: create_pr
+   #    uses: peter-evans/create-pull-request@v5
+   #    with:
+   #      token: ${{ secrets.GH_TOKEN }}
+   #      commit-message: "Merging solution branch"
+   #      title: "Automated PR for solution branch"
+   #      body: "This PR merges the latest solution export changes."
+   #      branch: ${{ env.RECENT_BRANCH }}
+   #      base: main
+   #      delete-branch: false  # Keep it until merged
 
-    - name: Merge Pull Request
-      run: |
-        gh pr merge --auto --squash --delete-branch ${{ env.RECENT_BRANCH }}
-      env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+   #  - name: Merge Pull Request
+   #    run: |
+   #      gh pr merge --auto --squash --delete-branch ${{ env.RECENT_BRANCH }}
+   #    env:
+   #      GH_TOKEN: ${{ secrets.GH_TOKEN }}
         
     - name: Trigger Release Workflow
       uses: actions/github-script@v6
