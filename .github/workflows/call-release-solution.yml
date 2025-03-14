@@ -1,6 +1,8 @@
 
 name: Call Release Solution Workflow
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - main
