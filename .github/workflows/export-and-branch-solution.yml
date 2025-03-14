@@ -119,10 +119,10 @@ jobs:
           await github.rest.actions.createWorkflowDispatch({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            workflow_id: "call-release-solution.yml",
+            workflow_id: "call-release-solution.yml",  # Ensure this matches the file name
             ref: "main",
             inputs: {
-              solution_name: "${{ inputs.solution_name }}"
+              solution_name: "Azure"
             }
           });
 
