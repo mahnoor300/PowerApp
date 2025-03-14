@@ -19,7 +19,7 @@ jobs:
   call-release-workflow:
     uses: ./.github/workflows/release-solution-to-prod-reusable.yml
     with:
-      solution_name:          ${{inputs.solution_name}}
+      solution_name:    ${{ github.event.inputs.solution_name }}
       BUILD_ENVIRONMENT_URL: ${{ vars.BUILD_ENVIRONMENT_URL }}  
       PRODUCTION_ENVIRONMENT_URL: ${{ vars.PRODUCTION_ENVIRONMENT_URL }}  
     
