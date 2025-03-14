@@ -69,7 +69,7 @@ jobs:
       with:
         solution-folder: out/solutions/${{inputs.SOLUTION_NAME}}
         solution-target-folder: solutions/SCRUM-1-${{inputs.SOLUTION_NAME}}
-        repo-token: ${{ secrets.ACCESS_SECRET }}
+        repo-token: ${{ secrets.GH_TOKEN }}
         allow-empty-commit: true
 
 
@@ -97,7 +97,7 @@ jobs:
       id: create_pr
       uses: peter-evans/create-pull-request@v5
       with:
-        token: ${{ secrets.ACCESS_SECRET }}
+        token: ${{ secrets.GH_TOKEN }}
         commit-message: "Merging solution branch"
         title: "Automated PR for solution branch"
         body: "This PR merges the latest solution export changes."
@@ -109,4 +109,4 @@ jobs:
       run: |
         gh pr merge --auto --squash --delete-branch ${{ env.RECENT_BRANCH }}
       env:
-        GH_TOKEN: ${{ secrets.ACCESS_SECRET }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
