@@ -119,7 +119,7 @@ jobs:
           await github.rest.actions.createWorkflowDispatch({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            workflow_id: "release-solution-to-prod-reusable.yml",
+            workflow_id: "call-release-solution.yml",
             ref: "main",
             inputs: {
               solution_name: "${{ inputs.SOLUTION_NAME }}"
