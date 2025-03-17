@@ -58,14 +58,18 @@ jobs:
       uses: microsoft/powerplatform-actions/actions-install@v1
       with:
         cloud: 'Public'
-        
+    - name: Debug - Check Customizations.xml
+      run: |
+        dir out/solutions/devsol/Other
     - name: Pack solution
       uses: microsoft/powerplatform-actions/pack-solution@v1
       with:
         solution-folder: ${{ inputs.solution_source_folder}}/${{ inputs.solution_name }}
         solution-file: ${{ inputs.solution_outbound_folder}}/${{ inputs.solution_name }}.zip
         solution-type: Unmanaged
-        other-folder-path: "out/solutions/${{ inputs.solution_name }}/Other"  
+        other-folder-path: "solutions/${{ inputs.solution_name }}/Other"  
+
+
 
     - name: Import solution as unmanaged to build env
       uses: microsoft/powerplatform-actions/import-solution@v1
