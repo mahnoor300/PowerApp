@@ -112,7 +112,7 @@ jobs:
         token: ${{ secrets.GH_TOKEN }}
         title: "Approval Needed for PR #${{ steps.create_pr.outputs.pull-request-number }}"
         content: |
-          @approver_username, please review and approve PR #${{ steps.create_pr.outputs.pull-request-number }}.
+          @CODEOWNERS, please review and approve PR #${{ steps.create_pr.outputs.pull-request-number }}.
           - **PR Link:** ${{ steps.create_pr.outputs.pull-request-url }}
           - **Description:** This PR contains exported solution changes that need approval before merging.
           
