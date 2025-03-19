@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EntityRelationships xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EntityRelationship Name="business_unit_cf22_canvasapp" />
+  <EntityRelationship Name="business_unit_cf22_table1" />
+  <EntityRelationship Name="lk_cf22_canvasapp_createdby" />
+  <EntityRelationship Name="lk_cf22_canvasapp_modifiedby" />
+  <EntityRelationship Name="lk_cf22_table1_createdby" />
+  <EntityRelationship Name="lk_cf22_table1_modifiedby" />
+  <EntityRelationship Name="owner_cf22_canvasapp" />
+  <EntityRelationship Name="owner_cf22_table1" />
+  <EntityRelationship Name="team_cf22_canvasapp" />
+  <EntityRelationship Name="team_cf22_table1" />
+  <EntityRelationship Name="user_cf22_canvasapp" />
+  <EntityRelationship Name="user_cf22_table1" />
+</EntityRelationships>
