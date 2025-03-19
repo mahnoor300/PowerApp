@@ -127,9 +127,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Wait for Manual Approval
-      uses: hmarr/auto-approve-action@v3
-      with:
-        github-token: ${{ secrets.GH_TOKEN }}
+      run: |
+        echo "Please manually approve the PR in GitHub before proceeding."
 
   merge-pr:
     needs: wait-for-approval
