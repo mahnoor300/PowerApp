@@ -110,7 +110,7 @@ jobs:
     - name: Create Approval Issue
       uses: peter-evans/create-issue-from-file@v4
       with:
-        token: ${{ secrets.GH_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         title: "Approval Needed for PR #${{ steps.create_pr.outputs.pull-request-number }}"
         content: |
           @CODEOWNERS, please review and approve PR #${{ steps.create_pr.outputs.pull-request-number }}.
