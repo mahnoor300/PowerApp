@@ -126,12 +126,40 @@ jobs:
           SOLUTION_NAME: ${{ inputs.solution_name }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+  wait-for-approval:
+    runs-on: ubuntu-latest
+    needs: request-approval
+    steps:
+      - name: Wait for approval issue to be closed
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = ${{ needs.request-approval.outputs.issue_number }};
+            console.log(`Waiting for issue #${issue_number} to be closed for approval...`);
 
- 
+            let approved = false;
+            while (!approved) {
+              await new Promise(resolve => setTimeout(resolve, 60 * 1000)); // Wait 1 minute before checking again
+              
+              const { data: issue } = await github.rest.issues.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number
+              });
+
+              if (issue.state === "closed") {
+                console.log("Approval issue closed. Proceeding...");
+                approved = true;
+              } else {
+                console.log("Approval issue still open. Waiting...");
+              }
+            }
+
 
   release-to-staging:
     runs-on: windows-latest
-    needs: request-approval
+    needs: wait-for-approval
 
    
     steps:
