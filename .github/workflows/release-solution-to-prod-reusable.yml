@@ -108,17 +108,25 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const solutionName = process.env.SOLUTION_NAME;
+            const requester = process.env.GITHUB_ACTOR;
+            const repo = process.env.GITHUB_REPOSITORY;
+
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: "🚀 Approval Required: Release Solution to PROD",
-              body: "A new managed solution is ready for deployment. Please approve the release by closing this issue.\n\n" +
-                    "**Solution Name:** `${{ inputs.solution_name }}`\n" +
-                    "**Requested by:** @${{ github.actor }}\n\n" +
-                    "Click [here](https://github.com/${{ github.repository }}/actions) to view the workflow.",
+              body: `A new managed solution is ready for deployment. Please approve the release by closing this issue.\n\n
+              **Solution Name:** ${solutionName}\n
+              **Requested by:** @${requester}\n\n
+              Click [here](https://github.com/${repo}/actions) to view the workflow.`,
               labels: ["approval", "release"],
-              assignees: ["mbilal523"] # Replace with actual approvers
+              assignees: ["mbilal523"]  # Replace with actual approvers
             });
+        env:
+          SOLUTION_NAME: ${{ inputs.solution_name }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
 
  
