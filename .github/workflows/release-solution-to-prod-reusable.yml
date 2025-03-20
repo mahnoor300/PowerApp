@@ -95,73 +95,38 @@ jobs:
   request-approval:
     runs-on: ubuntu-latest
     needs: convert-to-managed
+    outputs:
+      issue_number: ${{ steps.create-approval.outputs.issue_number }}
     steps:
       - name: Create an Approval Issue
+        id: create-approval
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            (async () => {
-              const solutionName = process.env.SOLUTION_NAME;
-              const requester = process.env.GITHUB_ACTOR;
-              const repo = process.env.GITHUB_REPOSITORY;
-              
-              console.log("Creating an approval issue for solution:", solutionName);
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚀 Approval Required: Release Solution to PROD`,
+              body: `A new managed solution is ready for deployment. Please approve the release by closing this issue.\n\n
+              **Solution Name:** ${{ inputs.solution_name }}\n
+              **Requested by:** @${{ github.actor }}\n\n
+              Click [here](https://github.com/${{ github.repository }}/actions) to view the workflow.`,
+              labels: ["approval", "release"],
+              assignees: ["mbilal523"]
+            });
 
-              const issue = await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `🚀 Approval Required: Release Solution to PROD`,
-                body: `A new managed solution is ready for deployment. Please approve the release by closing this issue.\n\n
-                **Solution Name:** ${solutionName}\n
-                **Requested by:** @${requester}\n\n
-                Click [here](https://github.com/${repo}/actions) to view the workflow.`,
-                labels: ["approval", "release"],
-                assignees: ["mbilal523"]
-              });
-
-              console.log("Issue created successfully:", issue.data.html_url);
-            })();
-        env:
-          SOLUTION_NAME: ${{ inputs.solution_name }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-  wait-for-approval:
-    runs-on: ubuntu-latest
-    needs: request-approval
-    steps:
-      - name: Wait for approval issue to be closed
-        uses: actions/github-script@v7
+            core.setOutput("issue_number", issue.data.number);
+      
+      - name: Wait for Approval
+        uses: hmarr/auto-approve-action@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const issue_number = ${{ needs.request-approval.outputs.issue_number }};
-            console.log(`Waiting for issue #${issue_number} to be closed for approval...`);
-
-            let approved = false;
-            while (!approved) {
-              await new Promise(resolve => setTimeout(resolve, 60 * 1000)); // Wait 1 minute before checking again
-              
-              const { data: issue } = await github.rest.issues.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number
-              });
-
-              if (issue.state === "closed") {
-                console.log("Approval issue closed. Proceeding...");
-                approved = true;
-              } else {
-                console.log("Approval issue still open. Waiting...");
-              }
-            }
-
+          pull-request-number: ${{ steps.create-approval.outputs.issue_number }}
 
   release-to-staging:
     runs-on: windows-latest
-    needs: wait-for-approval
-
-   
+    needs: request-approval
     steps:
     - uses: actions/checkout@v2
       with:
