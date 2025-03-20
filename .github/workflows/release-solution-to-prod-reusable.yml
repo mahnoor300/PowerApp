@@ -133,8 +133,7 @@ jobs:
     runs-on: windows-latest
     needs: request-approval
 
-    environment:
-      name: staging  
+   
     steps:
     - uses: actions/checkout@v2
       with:
