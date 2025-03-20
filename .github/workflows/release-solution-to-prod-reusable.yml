@@ -102,32 +102,43 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            (async () => {
-              const solutionName = process.env.SOLUTION_NAME;
-              const requester = process.env.GITHUB_ACTOR;
-              const repo = process.env.GITHUB_REPOSITORY;
-              
-              console.log("Creating an approval issue for solution:", solutionName);
+            const solutionName = process.env.SOLUTION_NAME;
+            const requester = process.env.GITHUB_ACTOR;
+            const repo = process.env.GITHUB_REPOSITORY;
+            
+            console.log("Creating an approval issue for solution:", solutionName);
 
-              const issue = await github.rest.issues.create({
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚀 Approval Required: Release Solution to PROD`,
+              body: `A new managed solution is ready for deployment. Please approve the release by closing this issue.\n\n
+              **Solution Name:** ${solutionName}\n
+              **Requested by:** @${requester}\n\n
+              Click [here](https://github.com/${repo}/actions) to view the workflow.`,
+              labels: ["approval", "release"],
+              assignees: ["mbilal523"]
+            });
+
+            console.log("Issue created successfully:", issue.data.html_url);
+            console.log("Waiting for approval...");
+
+            // Wait until the issue is closed
+            while (true) {
+              const { data: issueDetails } = await github.rest.issues.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                title: `🚀 Approval Required: Release Solution to PROD`,
-                body: `A new managed solution is ready for deployment. Please approve the release by closing this issue.\n\n
-                **Solution Name:** ${solutionName}\n
-                **Requested by:** @${requester}\n\n
-                Click [here](https://github.com/${repo}/actions) to view the workflow.`,
-                labels: ["approval", "release"],
-                assignees: ["mbilal523"]
+                issue_number: issue.data.number,
               });
 
-              console.log("Issue created successfully:", issue.data.html_url);
-            })();
-        env:
-          SOLUTION_NAME: ${{ inputs.solution_name }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+              if (issueDetails.state === "closed") {
+                console.log("Approval granted! Proceeding with deployment.");
+                break;
+              }
 
+              console.log("Approval pending... checking again in 30 seconds.");
+              await new Promise(resolve => setTimeout(resolve, 30000));
+            }
 
 
 
