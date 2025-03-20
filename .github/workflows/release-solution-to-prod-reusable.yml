@@ -117,12 +117,25 @@ jobs:
             });
 
             core.setOutput("issue_number", issue.data.number);
-      
+
       - name: Wait for Approval
-        uses: hmarr/auto-approve-action@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request-number: ${{ steps.create-approval.outputs.issue_number }}
+        id: wait-approval
+        run: |
+          ISSUE_NUMBER=${{ steps.create-approval.outputs.issue_number }}
+          echo "Waiting for issue #$ISSUE_NUMBER to be closed..."
+          while true; do
+            ISSUE_STATE=$(gh issue view $ISSUE_NUMBER --repo ${{ github.repository }} --json state --jq .state)
+            echo "Current issue state: $ISSUE_STATE"
+            if [[ "$ISSUE_STATE" == "CLOSED" ]]; then
+              echo "Approval received! Proceeding with release..."
+              break
+            fi
+            echo "Waiting for approval... checking again in 30 seconds."
+            sleep 30
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
   release-to-staging:
     runs-on: windows-latest
