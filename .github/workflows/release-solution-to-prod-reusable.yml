@@ -117,11 +117,10 @@ jobs:
             **Solution Name:** ${{ inputs.solution_name }}
             **Requested by:** ${{ github.actor }}
             Click [here](https://github.com/${{ github.repository }}/actions) to view the workflow.
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          JIRA_CONFIG_PATH: ""  # <-- This line disables the config.yml requirement
+          site: ${{ secrets.JIRA_BASE_URL }}  # Specify Jira site here
+          email: ${{ secrets.JIRA_USER_EMAIL }}  # Use email input instead of env variable
+          api-token: ${{ secrets.JIRA_API_TOKEN }}  # Use API token as input instead of env variable
+
 
 
       - name: Wait for Jira Approval
