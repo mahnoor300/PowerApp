@@ -105,22 +105,23 @@ jobs:
     outputs:
       issue_key: ${{ steps.create-jira-issue.outputs.issue_key }}
     steps:
-      - name: Create Jira Issue for Approval
-        id: create-jira-issue
-        uses: atlassian/gajira-create@v3
-        with:
-          project: "PROJ"  # Replace with your Jira project key
-          issuetype: "Task" # Change if needed
-          summary: "🚀 Approval Required: Release Solution to PROD"
-          description: |
-            A new managed solution is ready for deployment. Please approve the release.
-            **Solution Name:** ${{ inputs.solution_name }}
-            **Requested by:** ${{ github.actor }}
-            Click [here](https://github.com/${{ github.repository }}/actions) to view the workflow.
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    - name: Create Jira Issue for Approval
+      id: create-jira-issue
+      uses: atlassian/gajira-create@v3
+      with:
+        project: "PROJ"  # Replace with your Jira project key
+        issuetype: "Task" # Change if needed
+        summary: "🚀 Approval Required: Release Solution to PROD"
+        description: |
+          A new managed solution is ready for deployment. Please approve the release.
+          **Solution Name:** ${{ inputs.solution_name }}
+          **Requested by:** ${{ github.actor }}
+          Click [here](https://github.com/${{ github.repository }}/actions) to view the workflow.
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
 
       - name: Wait for Jira Approval
         id: wait-approval
