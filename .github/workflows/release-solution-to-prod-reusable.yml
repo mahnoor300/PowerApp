@@ -122,10 +122,9 @@ jobs:
         JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
         JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
-
-      - name: Wait for Jira Approval
-        id: wait-approval
-        run: |
+    - name: Wait for Jira Approval
+      id: wait-approval
+      run: |
           ISSUE_KEY=${{ steps.create-jira-issue.outputs.issue_key }}
           echo "Waiting for Jira issue $ISSUE_KEY to be moved to 'Approved' status..."
           while true; do
@@ -141,7 +140,7 @@ jobs:
             echo "Waiting for approval... checking again in 60 seconds."
             sleep 60
           done
-        env:
+      env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
