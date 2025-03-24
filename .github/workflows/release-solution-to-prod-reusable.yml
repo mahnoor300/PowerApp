@@ -109,8 +109,8 @@ jobs:
         id: create-jira-issue
         uses: atlassian/gajira-create@v3
         with:
-          project: "PROJ"  # Change to your Jira project key
-          issuetype: "Task" # Change to "Approval" or any custom issue type if available
+          project: "PROJ"  # Replace with your Jira project key
+          issuetype: "Task" # Change if needed
           summary: "🚀 Approval Required: Release Solution to PROD"
           description: |
             A new managed solution is ready for deployment. Please approve the release.
