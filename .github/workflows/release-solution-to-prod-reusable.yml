@@ -110,7 +110,13 @@ jobs:
           echo "JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}" >> $GITHUB_ENV
           echo "JIRA_USER_EMAIL=${{ secrets.JIRA_USER_EMAIL }}" >> $GITHUB_ENV
           echo "JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}" >> $GITHUB_ENV
-      
+      - name: Create Jira Config File
+        run: |
+          mkdir -p /home/runner/jira
+          echo "site: ${{ secrets.JIRA_BASE_URL }}" > /home/runner/jira/config.yml
+          echo "email: ${{ secrets.JIRA_USER_EMAIL }}" >> /home/runner/jira/config.yml
+          echo "api-token: ${{ secrets.JIRA_API_TOKEN }}" >> /home/runner/jira/config.yml
+
       - name: Create Jira Issue for Approval
         id: create-jira-issue
         uses: atlassian/gajira-create@v3
