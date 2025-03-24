@@ -39,19 +39,7 @@ on:
       envSecret:
         description: 'The secret value for authentication using SPN'
         required: true
-      JIRA_API_TOKEN:
-        description: 'Jira API token for authentication'
-        required: true
-      JIRA_EMAIL:
-        description: 'Email associated with the Jira account'
-        required: true
-      JIRA_BASE_URL:
-        description: 'Base URL of your Jira instance'
-        required: true
-      JIRA_PROJECT_KEY:
-        description: 'Project key in Jira'
-        required: true
- 
+
 jobs:
   convert-to-managed:
     runs-on: windows-latest
