@@ -105,6 +105,12 @@ jobs:
     outputs:
       issue_key: ${{ steps.create-jira-issue.outputs.issue_key }}
     steps:
+      - name: Set up JIRA authentication
+        run: |
+          echo "JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}" >> $GITHUB_ENV
+          echo "JIRA_USER_EMAIL=${{ secrets.JIRA_USER_EMAIL }}" >> $GITHUB_ENV
+          echo "JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}" >> $GITHUB_ENV
+      
       - name: Create Jira Issue for Approval
         id: create-jira-issue
         uses: atlassian/gajira-create@v3
@@ -117,9 +123,6 @@ jobs:
             **Solution Name:** ${{ inputs.solution_name }}
             **Requested by:** ${{ github.actor }}
             Click [here](https://github.com/${{ github.repository }}/actions) to view the workflow.
-          site: ${{ secrets.JIRA_BASE_URL }}  # Specify Jira site here
-          email: ${{ secrets.JIRA_USER_EMAIL }}  # Use email input instead of env variable
-          api-token: ${{ secrets.JIRA_API_TOKEN }}  # Use API token as input instead of env variable
 
 
 
