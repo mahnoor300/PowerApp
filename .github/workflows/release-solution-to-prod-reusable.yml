@@ -117,8 +117,8 @@ jobs:
             -X POST \
             -H "Content-Type: application/json" \
             -d '{"fields": {"project": {"key": "PROJ"},"summary": "Test issue","description": "Test description","issuetype": {"name": "Task"}}}' \
-            ${{ secrets.JIRA_BASE_URL }}/rest/api/2/issue
-      
+            "${{ secrets.JIRA_BASE_URL }}/rest/api/2/issue"
+
 
       - name: Create Jira Issue for Approval
         id: create-jira-issue
