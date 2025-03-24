@@ -110,12 +110,15 @@ jobs:
           echo "JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}" >> $GITHUB_ENV
           echo "JIRA_USER_EMAIL=${{ secrets.JIRA_USER_EMAIL }}" >> $GITHUB_ENV
           echo "JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}" >> $GITHUB_ENV
-      - name: Create Jira Config File
+      - name: Debug Jira Response
         run: |
-          mkdir -p /home/runner/jira
-          echo "site: ${{ secrets.JIRA_BASE_URL }}" > /home/runner/jira/config.yml
-          echo "email: ${{ secrets.JIRA_USER_EMAIL }}" >> /home/runner/jira/config.yml
-          echo "api-token: ${{ secrets.JIRA_API_TOKEN }}" >> /home/runner/jira/config.yml
+          echo "Attempting to create Jira issue..."
+          curl -u "${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"fields": {"project": {"key": "PROJ"},"summary": "Test issue","description": "Test description","issuetype": {"name": "Task"}}}' \
+            ${{ secrets.JIRA_BASE_URL }}/rest/api/2/issue
+      
 
       - name: Create Jira Issue for Approval
         id: create-jira-issue
