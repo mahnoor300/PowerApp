@@ -108,8 +108,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const jiraUrl = `${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue`;
-            const auth = Buffer.from(`${{ secrets.JIRA_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}`).toString('base64');
+            const jiraUrl = `${{ secrets.JIRA_URL }}/rest/api/3/issue`;
+            const auth = Buffer.from(`${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}`).toString('base64');
  
             const issueData = {
               fields: {
@@ -168,8 +168,8 @@ jobs:
           ISSUE_KEY=${{ steps.create-jira-issue.outputs.issue_key }}
           echo "Waiting for Jira issue $ISSUE_KEY to be approved..."
           while true; do
-            ISSUE_STATUS=$(curl -s -u "${{ secrets.JIRA_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}" \
-              "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$ISSUE_KEY" | jq -r '.fields.status.name')
+            ISSUE_STATUS=$(curl -s -u "${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}" \
+              "${{ secrets.JIRA_URL }}/rest/api/3/issue/$ISSUE_KEY" | jq -r '.fields.status.name')
             echo "Current issue status: $ISSUE_STATUS"
             if [[ "$ISSUE_STATUS" == "Approved" ]]; then
               echo "Approval received! Proceeding with release..."
