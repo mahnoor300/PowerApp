@@ -94,8 +94,8 @@ jobs:
       with:
         name: managedSolutions
         path: ${{ inputs.solution_shipping_folder}}/
- 
-        
+   
+          
   request-approval:
     runs-on: ubuntu-latest
     needs: convert-to-managed
@@ -108,9 +108,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const jiraUrl = `${{ secrets.JIRA_URL }}/rest/api/3/issue`;
+            const jiraBaseUrl = '${{ secrets.JIRA_URL }}'.replace(/\/$/, ''); // Remove trailing slash if present
+            const jiraUrl = `${jiraBaseUrl}/rest/api/3/issue`;
             const auth = Buffer.from(`${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}`).toString('base64');
- 
+  
             const issueData = {
               fields: {
                 project: {
@@ -149,27 +150,44 @@ jobs:
                 }
               }
             };
- 
-            const response = await fetch(jiraUrl, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Basic ${auth}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(issueData)
-            });
- 
-            const issue = await response.json();
-            core.setOutput("issue_key", issue.key);
- 
+  
+            try {
+              const response = await fetch(jiraUrl, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Basic ${auth}`,
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify(issueData)
+              });
+  
+              if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`Jira API request failed: ${response.status} ${response.statusText} - ${errorBody}`);
+              }
+  
+              const issue = await response.json();
+              console.log('Created Jira issue:', issue.key);
+              core.setOutput("issue_key", issue.key);
+            } catch (error) {
+              core.setFailed(`Failed to create Jira issue: ${error.message}`);
+            }
+  
       - name: Wait for Jira Issue Approval
         id: wait-jira-approval
         run: |
           ISSUE_KEY=${{ steps.create-jira-issue.outputs.issue_key }}
+          JIRA_BASE_URL="${{ secrets.JIRA_URL }}"
+          JIRA_EMAIL="${{ secrets.JIRA_USER_EMAIL }}"
+          JIRA_API_TOKEN="${{ secrets.JIRA_API_TOKEN }}"
+  
           echo "Waiting for Jira issue $ISSUE_KEY to be approved..."
           while true; do
-            ISSUE_STATUS=$(curl -s -u "${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}" \
-              "${{ secrets.JIRA_URL }}/rest/api/3/issue/$ISSUE_KEY" | jq -r '.fields.status.name')
+            ISSUE_STATUS=$(curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
+              "$JIRA_BASE_URL/rest/api/3/issue/$ISSUE_KEY?fields=status" \
+              | jq -r '.fields.status.name')
+  
             echo "Current issue status: $ISSUE_STATUS"
             if [[ "$ISSUE_STATUS" == "Approved" ]]; then
               echo "Approval received! Proceeding with release..."
@@ -178,7 +196,6 @@ jobs:
             echo "Waiting for approval... checking again in 30 seconds."
             sleep 30
           done
- 
  
   release-to-staging:
     runs-on: windows-latest
