@@ -1,160 +1,146 @@
-
-
 name: export-and-branch-solution
+
 on:
   workflow_dispatch:
     inputs:
-      solution_name:
-        description: 'name of the solution'
+      issue_key:
+        description: "Jira Issue Key"
         required: true
-
+        type: string
+      summary:
+        description: "Issue Summary"
+        required: false
+        type: string
+      solution_name:
+        description: "Name of the solution"
+        required: true
+        type: string
       solution_exported_folder:
-        description: 'folder name for staging the exported solution *do not change*'
+        description: "Folder name for staging the exported solution *do not change*"
         required: true
         default: out/exported/
       solution_folder:
-        description: 'staging the unpacked solution folder before check-in *do not change*'
+        description: "Staging the unpacked solution folder before check-in *do not change*"
         required: true
         default: out/solutions/
       solution_target_folder: 
-        description: 'folder name to be created and checked in *do not change*'
+        description: "Folder name to be created and checked in *do not change*"
         required: true
         default: solutions/
+
 permissions:
   contents: write
+
 jobs:
   export-from-dev:
     runs-on: windows-latest
     env:
       RUNNER_DEBUG: 1
     steps:
-    - uses: actions/checkout@v2
-      with:
-        lfs: true
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
         
-    - name: Install PAC CLI
-      uses: microsoft/powerplatform-actions/actions-install@v1
-      with:
-        cloud: 'Public'
- 
-    - name: who-am-i action
-      uses: microsoft/powerplatform-actions/who-am-i@v1
-      with:
-        environment-url: ${{secrets.ENVIRONMENT_URL}}
-        app-id: ${{secrets.CLIENT_ID}}
-        client-secret: ${{secrets.PowerPlatformSPN}}
-        tenant-id: ${{secrets.TENANT_ID}}
- 
-    - name: export-solution action
-      uses: microsoft/powerplatform-actions/export-solution@v1
-      with:
-        environment-url: ${{secrets.ENVIRONMENT_URL}}
-        app-id: ${{secrets.CLIENT_ID}}
-        client-secret: ${{ secrets.PowerPlatformSPN }}
-        tenant-id: ${{secrets.TENANT_ID}}
-        solution-name: ${{inputs.solution_name}}
-        solution-output-file: out/exported/${{inputs.solution_name}}.zip
- 
-    - name: unpack-solution action
-      uses: microsoft/powerplatform-actions/unpack-solution@v1
-      with:
-        solution-file: out/exported/${{inputs.solution_name}}.zip
-        solution-folder: out/solutions/${{inputs.solution_name}}
-        solution-type: 'Unmanaged'
-        overwrite-files: true
+      - name: Install PAC CLI
+        uses: microsoft/powerplatform-actions/actions-install@v1
+        with:
+          cloud: 'Public'
+      
+      - name: Display Jira Issue Information
+        run: |
+          echo "Jira Issue Key: ${{ github.event.inputs.issue_key }}"
+          echo "Summary: ${{ github.event.inputs.summary }}"
 
-   # Branch-solution step generates the branch name dynamically
-    - name: branch-solution, prepare it for a PullRequest
-      id: branch-solution
-      uses: microsoft/powerplatform-actions/branch-solution@v1
-      with:
-        solution-folder: out/solutions/${{inputs.solution_name}}
-        solution-target-folder: solutions/SCRUM-1-${{inputs.solution_name}}
-        repo-token: ${{ secrets.GH_TOKEN }}
-        allow-empty-commit: true
+      - name: Export Solution
+        uses: microsoft/powerplatform-actions/export-solution@v1
+        with:
+          environment-url: ${{ secrets.ENVIRONMENT_URL }}
+          app-id: ${{ secrets.CLIENT_ID }}
+          client-secret: ${{ secrets.PowerPlatformSPN }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          solution-name: ${{ inputs.solution_name }}
+          solution-output-file: out/exported/${{ inputs.solution_name }}.zip
 
+      - name: Unpack Solution
+        uses: microsoft/powerplatform-actions/unpack-solution@v1
+        with:
+          solution-file: out/exported/${{ inputs.solution_name }}.zip
+          solution-folder: out/solutions/${{ inputs.solution_name }}
+          solution-type: 'Unmanaged'
+          overwrite-files: true
 
-    - name: Fetch and merge the most recent branch
-      run: |
-        git fetch --all
-  
-        $RECENT_BRANCH = git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/remotes/origin | Where-Object { $_ -ne "origin/main" } | Select-Object -First 1
-  
-        if (-not $RECENT_BRANCH) {
-          Write-Error "No recent branch found to merge."
-          git branch -a # Debug: List all branches
-          exit 1
-        }
-    
-        $CLEAN_BRANCH = $RECENT_BRANCH -replace '^origin/', ''
+      - name: Branch Solution
+        id: branch-solution
+        uses: microsoft/powerplatform-actions/branch-solution@v1
+        with:
+          solution-folder: out/solutions/${{ inputs.solution_name }}
+          solution-target-folder: solutions/SCRUM-1-${{ inputs.solution_name }}
+          repo-token: ${{ secrets.GH_TOKEN }}
+          allow-empty-commit: true
 
-        # Store in GITHUB_ENV
-        echo "RECENT_BRANCH=$CLEAN_BRANCH" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Create Pull Request
+        id: create_pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          commit-message: "Merging solution branch"
+          title: "Automated PR for solution branch linked to Jira Issue ${{ inputs.issue_key }}"
+          body: |
+            **Jira Issue:** [${{ inputs.issue_key }}](https://your-jira-instance.atlassian.net/browse/${{ inputs.issue_key }})
+            **Summary:** ${{ inputs.summary }}
+            - Exported solution: ${{ inputs.solution_name }}
+          branch: SCRUM-1-${{ inputs.solution_name }}
+          base: main
+          delete-branch: false
 
-        Write-Output "Most recent branch: $RECENT_BRANCH"
-
-
-    - name: Create Pull Request
-      id: create_pr
-      uses: peter-evans/create-pull-request@v5
-      with:
-        token: ${{ secrets.GH_TOKEN }}
-        commit-message: "Merging solution branch"
-        title: "Automated PR for solution branch"
-        body: "This PR merges the latest solution export changes."
-        branch: ${{ env.RECENT_BRANCH }}
-        base: main
-        delete-branch: false  # Keep it until merged
-
-    
-    - name: Create Approval Issue
-      uses: peter-evans/create-issue-from-file@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        title: "Approval Needed for PR #${{ steps.create_pr.outputs.pull-request-number }}"
-        content: |
-          @CODEOWNERS, please review and approve PR #${{ steps.create_pr.outputs.pull-request-number }}.
-          - **PR Link:** ${{ steps.create_pr.outputs.pull-request-url }}
-          - **Description:** This PR contains exported solution changes that need approval before merging.
-          
-          **Next Steps:**
-          1. Review the PR and provide feedback.
-          2. Approve the PR if everything looks good.
-          3. Merge will proceed only after approval.
-        labels: "approval needed"
+      - name: Create Approval Issue in GitHub
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Approval Needed for PR #${{ steps.create_pr.outputs.pull-request-number }}"
+          content: |
+            @CODEOWNERS, please review and approve PR #${{ steps.create_pr.outputs.pull-request-number }}.
+            - **PR Link:** ${{ steps.create_pr.outputs.pull-request-url }}
+            - **Linked Jira Issue:** [${{ inputs.issue_key }}](https://your-jira-instance.atlassian.net/browse/${{ inputs.issue_key }})
+            - **Description:** This PR contains exported solution changes that need approval before merging.
+            
+            **Next Steps:**
+            1. Review the PR and provide feedback.
+            2. Approve the PR if everything looks good.
+            3. Merge will proceed only after approval.
+          labels: "approval needed"
 
   wait-for-approval:
     needs: export-from-dev
     runs-on: ubuntu-latest
     steps:
-    - name: Wait for Manual Approval
-      run: |
-        echo "Please manually approve the PR in GitHub before proceeding."
+      - name: Wait for Manual Approval
+        run: echo "Please manually approve the PR in GitHub before proceeding."
 
   merge-pr:
     needs: wait-for-approval
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Merge Pull Request
-      run: |
-        gh pr merge --auto --squash --delete-branch ${{ github.head_ref }}
-      env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
-            
-    - name: Trigger Release Workflow
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ secrets.GH_TOKEN }}
-        script: |
-          await github.rest.actions.createWorkflowDispatch({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            workflow_id: "call-release-solution.yml",
-            ref: "main",
-            inputs: {
-              solution_name: "${{ inputs.solution_name }}"
-            }
-          });
+      - name: Merge Pull Request
+        run: |
+          gh pr merge --auto --squash --delete-branch SCRUM-1-${{ github.event.inputs.solution_name }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Trigger Release Workflow
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: "call-release-solution.yml",
+              ref: "main",
+              inputs: {
+                solution_name: "${{ github.event.inputs.solution_name }}"
+              }
+            });
