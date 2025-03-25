@@ -92,34 +92,27 @@ jobs:
           branch: ${{inputs.issue_key}}-${{ inputs.solution_name }}
           base: main
           delete-branch: false
-     
-      - name: Create Approval Issue
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Approval Needed for PR #${{ steps.create_pr.outputs.pull-request-number }}"
-          content: |
-            @CODEOWNERS, please review and approve PR #${{ steps.create_pr.outputs.pull-request-number }}.
-            - **PR Link:** ${{ steps.create_pr.outputs.pull-request-url }}
-            - **Description:** This PR contains exported solution changes that need approval before merging.
-            **Next Steps:**
-            1. Review the PR and provide feedback.
-            2. Approve the PR if everything looks good.
-            3. Merge will proceed only after approval.
-          labels: "approval needed"
-   
-  wait-for-approval:
-    needs: export-from-dev
-    runs-on: ubuntu-latest
-    steps:
-    - name: Wait for Manual Approval
-      run: |
-        echo "Please manually approve the PR in GitHub before proceeding."
-
+      - name: Wait for PR Approval
+        id: wait-approval
+        run: |
+          PR_NUMBER=${{ steps.create_pr.outputs.pull-request-number }}
+          echo "Waiting for approval on PR #$PR_NUMBER..."
+          while true; do
+            PR_STATE=$(gh pr view $PR_NUMBER --repo ${{ github.repository }} --json reviews --jq '.reviews | map(select(.state == "APPROVED")) | length')
+            echo "Current PR approval count: $PR_STATE"
+            if [[ "$PR_STATE" -gt 0 ]]; then
+              echo "PR approved! Proceeding with release..."
+              break
+            fi
+            echo "Waiting for PR approval... checking again in 30 seconds."
+            sleep 30
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
 
   merge-pr:
-    needs: wait-for-approval
+    needs: export-from-dev
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
