@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{b9b67fd0-f315-4b9d-9d6e-fe38ea8f23db}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="ref3442_bhyname" select="1" icon="1" preview="1">
+        <row name="result" id="ref3442_bhyid">
+          <cell name="ref3442_bhyname" width="300" />
+          <cell name="createdon" width="125" />
+          <cell name="ref3442_bhytype" width="150" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="ref3442_bhy">
+          <attribute name="ref3442_bhyid" />
+          <attribute name="ref3442_bhyname" />
+          <attribute name="createdon" />
+          <order attribute="ref3442_bhyname" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="ref3442_bhytype" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Bhies" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>
