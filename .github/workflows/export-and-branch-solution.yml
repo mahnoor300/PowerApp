@@ -92,7 +92,9 @@ jobs:
           branch: SCRUM-1-${{ inputs.solution_name }}
           base: main
           delete-branch: false
-
+  request-approval:
+     runs-on: windows-latest
+     steps:
       - name: Create Approval Issue in GitHub
         uses: peter-evans/create-issue-from-file@v4
         with:
@@ -110,12 +112,32 @@ jobs:
             3. Merge will proceed only after approval.
           labels: "approval needed"
 
-  wait-for-approval:
-    needs: export-from-dev
+  wait-for-codeowner-approval:
+    needs: [request-approval]
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for Manual Approval
-        run: echo "Please manually approve the PR in GitHub before proceeding."
+      - name: Wait for CodeOwner Approval
+        id: check-approval
+        run: |
+          PR_NUMBER=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?head=update-solution-${{ inputs.solution_name }}")
+ 
+          echo "Checking approval for PR #$PR_NUMBER"
+ 
+          while true; do
+            REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews")
+ 
+            APPROVED=$(echo "$REVIEWS" | jq -r '.[] | select(.state=="APPROVED") | .user.login')
+ 
+            if [[ ! -z "$APPROVED" ]]; then
+              echo "PR Approved by: $APPROVED"
+              break
+            else
+              echo "Waiting for Code Owner approval..."
+              sleep 30  # Check every 30 seconds
+            fi
+          done
 
   merge-pr:
     needs: wait-for-approval
