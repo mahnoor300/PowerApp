@@ -140,7 +140,7 @@ jobs:
           done
 
   merge-pr:
-    needs: wait-for-approval
+    needs: wait-for-codeowner-approva
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
