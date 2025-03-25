@@ -92,29 +92,9 @@ jobs:
           branch: ${{inputs.issue_key}}-${{ inputs.solution_name }}
           base: main
           delete-branch: false
-  request-approval:
-     runs-on: windows-latest
-     steps:
-      - name: Create Approval Issue in GitHub
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Approval Needed for PR #${{ steps.create_pr.outputs.pull-request-number }}"
-          content: |
-            @CODEOWNERS, please review and approve PR #${{ steps.create_pr.outputs.pull-request-number }}.
-            - **PR Link:** ${{ steps.create_pr.outputs.pull-request-url }}
-            - **Linked Jira Issue:** [${{ inputs.issue_key }}](https://your-jira-instance.atlassian.net/browse/${{ inputs.issue_key }})
-            - **Description:** This PR contains exported solution changes that need approval before merging.
-            
-            **Next Steps:**
-            1. Review the PR and provide feedback.
-            2. Approve the PR if everything looks good.
-            3. Merge will proceed only after approval.
-          labels: "approval needed"
-
   wait-for-codeowner-approval:
-    needs: [request-approval]
     runs-on: ubuntu-latest
+    needs: export-from-dev
     steps:
       - name: Wait for CodeOwner Approval
         id: check-approval
