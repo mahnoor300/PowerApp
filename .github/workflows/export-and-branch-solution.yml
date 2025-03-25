@@ -92,66 +92,44 @@ jobs:
           branch: ${{inputs.issue_key}}-${{ inputs.solution_name }}
           base: main
           delete-branch: false
-  wait-for-codeowner-approval:
-    runs-on: ubuntu-latest
+     
+      - name: Create Approval Issue
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Approval Needed for PR #${{ steps.create_pr.outputs.pull-request-number }}"
+          content: |
+            @CODEOWNERS, please review and approve PR #${{ steps.create_pr.outputs.pull-request-number }}.
+            - **PR Link:** ${{ steps.create_pr.outputs.pull-request-url }}
+            - **Description:** This PR contains exported solution changes that need approval before merging.
+            **Next Steps:**
+            1. Review the PR and provide feedback.
+            2. Approve the PR if everything looks good.
+            3. Merge will proceed only after approval.
+          labels: "approval needed"
+   
+  wait-for-approval:
     needs: export-from-dev
+    runs-on: ubuntu-latest
     steps:
-      - name: Wait for CodeOwner Approval
-        id: check-approval
-        run: |
-          PR_NUMBER=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls?head=update-solution-${{ inputs.solution_name }}")
- 
-          echo "Checking approval for PR #$PR_NUMBER"
- 
-          while true; do
-            REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews")
- 
-            APPROVED=$(echo "$REVIEWS" | jq -r '.[] | select(.state=="APPROVED") | .user.login')
- 
-            if [[ ! -z "$APPROVED" ]]; then
-              echo "PR Approved by: $APPROVED"
-              break
-            else
-              echo "Waiting for Code Owner approval..."
-              sleep 30  # Check every 30 seconds
-            fi
-          done
+    - name: Wait for Manual Approval
+      run: |
+        echo "Please manually approve the PR in GitHub before proceeding."
 
 
-
-  # merge-pr:
-  #   needs: wait-for-codeowner-approval
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v2
-
-  #     - name: Merge Pull Request
-  #       run: |
-  #         gh pr merge --auto --squash --delete-branch ${{inputs.issue_key}}-${{ github.event.inputs.solution_name }}
-  #       env:
-  #         GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   merge-pr:
-    runs-on: ubuntu-latest
     needs: wait-for-codeowner-approval
+    runs-on: ubuntu-latest
     steps:
-      - name: Get Pull Request Number
-        id: get-pr-number
-        run: |
-          PR_NUMBER=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls?head=update-solution-${{ inputs.solution_name }}" \
-            | jq -r '.[0].number')
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
       - name: Merge Pull Request
         run: |
-           curl -X PUT \
-            -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ env.PR_NUMBER }}/merge" \
-            -d '{"merge_method": "merge"}'
+          gh pr merge --auto --squash --delete-branch ${{inputs.issue_key}}-${{ github.event.inputs.solution_name }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
  
 
       - name: Trigger Release Workflow
