@@ -74,7 +74,7 @@ jobs:
         uses: microsoft/powerplatform-actions/branch-solution@v1
         with:
           solution-folder: out/solutions/${{ inputs.solution_name }}
-          solution-target-folder: solutions/SCRUM-1-${{ inputs.solution_name }}
+          solution-target-folder: solutions/${{inputs.issue_key}}-${{ inputs.solution_name }}
           repo-token: ${{ secrets.GH_TOKEN }}
           allow-empty-commit: true
 
@@ -89,7 +89,7 @@ jobs:
             **Jira Issue:** [${{ inputs.issue_key }}](https://your-jira-instance.atlassian.net/browse/${{ inputs.issue_key }})
             **Summary:** ${{ inputs.summary }}
             - Exported solution: ${{ inputs.solution_name }}
-          branch: SCRUM-1-${{ inputs.solution_name }}
+          branch: ${{inputs.issue_key}}-${{ inputs.solution_name }}
           base: main
           delete-branch: false
   request-approval:
@@ -148,7 +148,7 @@ jobs:
 
       - name: Merge Pull Request
         run: |
-          gh pr merge --auto --squash --delete-branch SCRUM-1-${{ github.event.inputs.solution_name }}
+          gh pr merge --auto --squash --delete-branch ${{inputs.issue_key}}-${{ github.event.inputs.solution_name }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
