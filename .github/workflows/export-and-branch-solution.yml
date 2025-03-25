@@ -119,7 +119,7 @@ jobs:
 
 
   merge-pr:
-    needs: wait-for-codeowner-approval
+    needs: wait-for-approval
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
