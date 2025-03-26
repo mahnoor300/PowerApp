@@ -95,26 +95,24 @@ jobs:
   
       - name: Wait for PR Approval
         run: |
-          $PR_NUMBER=48
+          $PR_NUMBER = ${{ github.event.pull_request.number }}  # Dynamic PR number
           Write-Output "Waiting for PR #$PR_NUMBER to be approved..."
           
           while ($true) {
-            # Check PR approval status
-            $APPROVAL_COUNT = gh pr view $PR_NUMBER --repo ${{ github.repository }} --json reviews --jq '.reviews | map(select(.state=="APPROVED")) | length'
+            $APPROVAL_COUNT = gh api repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews --jq '[.[] | select(.state=="APPROVED")] | length'
             Write-Output "Approval count: $APPROVAL_COUNT"
-  
-            if ($APPROVAL_COUNT -gt 0) {
+        
+            if ([int]$APPROVAL_COUNT -gt 0) {  # Ensure it’s treated as an integer
               Write-Output "PR has been approved! Proceeding..."
               break
             }
-  
+        
             Write-Output "Waiting for approval... checking again in 30 seconds."
             Start-Sleep -Seconds 30
           }
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
 
   merge-pr:
