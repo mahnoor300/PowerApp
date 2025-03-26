@@ -92,23 +92,20 @@ jobs:
           branch: ${{inputs.issue_key}}-${{ inputs.solution_name }}
           base: main
           delete-branch: false
-
+  
       - name: Wait for PR Approval
         run: |
           $PR_NUMBER=48
           Write-Output "Waiting for PR #$PR_NUMBER to be approved..."
           
           while ($true) {
-            $PR_STATE = gh pr view $PR_NUMBER --repo ${{ github.repository }} --json state --jq .state
-            Write-Output "Current PR state: $PR_STATE"
+            # Check PR approval status
+            $APPROVAL_COUNT = gh pr view $PR_NUMBER --repo ${{ github.repository }} --json reviews --jq '.reviews | map(select(.state=="APPROVED")) | length'
+            Write-Output "Approval count: $APPROVAL_COUNT"
   
-            if ($PR_STATE -eq "MERGED") {
-              Write-Output "PR has been merged! Proceeding..."
+            if ($APPROVAL_COUNT -gt 0) {
+              Write-Output "PR has been approved! Proceeding..."
               break
-            }
-            if ($PR_STATE -eq "CLOSED") {
-              Write-Output "PR was closed without merging. Exiting..."
-              exit 1
             }
   
             Write-Output "Waiting for approval... checking again in 30 seconds."
