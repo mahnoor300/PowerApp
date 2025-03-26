@@ -140,7 +140,7 @@ jobs:
 
 
   merge-pr:
-    needs: export-from-dev
+    needs: wait-for-codeowner-approval
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
