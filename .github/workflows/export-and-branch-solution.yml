@@ -93,40 +93,50 @@ jobs:
           base: main
           delete-branch: false
   
-      - name: Wait for PR Approval
+  wait-for-codeowner-approval:
+
+    runs-on: ubuntu-latest
+
+    needs: export-from-dev
+
+    steps:
+
+      - name: Wait for CodeOwner Approval
+
+        id: check-approval
+
         run: |
-          $PR_NUMBER = "${{ steps.create_pr.outputs.pull-request-number }}"
-          if (-not $PR_NUMBER) {
-            Write-Error "PR number not found. Ensure the 'Create Pull Request' step succeeded."
-            exit 1
-          }
-          Write-Output "Waiting for PR #$PR_NUMBER to be approved..."
-          
-          # Small delay to ensure PR is fully created
-          Start-Sleep -Seconds 10
-          
-          while ($true) {
-            $APPROVAL_COUNT = gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews" --jq '[.[] | select(.state=="APPROVED")] | length' 2>&1
-            Write-Output "Raw approval count response: $APPROVAL_COUNT"
-            
-            # Check if the response is a number
-            if ($APPROVAL_COUNT -match '^\d+$') {
-              $APPROVAL_COUNT_INT = [int]$APPROVAL_COUNT
-              Write-Output "Parsed approval count: $APPROVAL_COUNT_INT"
-              if ($APPROVAL_COUNT_INT -gt 0) {
-                Write-Output "PR #$PR_NUMBER has been approved! Proceeding..."
-                break
-              }
-            } else {
-              Write-Output "Invalid approval count response: $APPROVAL_COUNT"
-            }
-            
-            Write-Output "Waiting for approval... checking again in 30 seconds."
-            Start-Sleep -Seconds 30
-          }
-        shell: pwsh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          PR_NUMBER=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+
+            "https://api.github.com/repos/${{ github.repository }}/pulls?head=update-solution-${{ inputs.solution_name }}")
+ 
+          echo "Checking approval for PR #$PR_NUMBER"
+ 
+          while true; do
+
+            REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews")
+ 
+            APPROVED=$(echo "$REVIEWS" | jq -r '.[] | select(.state=="APPROVED") | .user.login')
+ 
+            if [[ ! -z "$APPROVED" ]]; then
+
+              echo "PR Approved by: $APPROVED"
+
+              break
+
+            else
+
+              echo "Waiting for Code Owner approval..."
+
+              sleep 30  # Check every 30 seconds
+
+            fi
+
+          done
+ 
 
 
   merge-pr:
