@@ -94,49 +94,40 @@ jobs:
           delete-branch: false
   
   wait-for-codeowner-approval:
-
     runs-on: ubuntu-latest
-
     needs: export-from-dev
-
     steps:
-
       - name: Wait for CodeOwner Approval
-
         id: check-approval
-
         run: |
-
+          # Fetch PR number based on the branch name created earlier
           PR_NUMBER=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-
-            "https://api.github.com/repos/${{ github.repository }}/pulls?head=update-solution-${{ inputs.solution_name }}")
- 
+            "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.actor }}:${{ inputs.issue_key }}-${{ inputs.solution_name }}" | \
+            jq -r '.[0].number // ""')
+  
+          if [ -z "$PR_NUMBER" ]; then
+            echo "Error: No pull request found for branch ${{ inputs.issue_key }}-${{ inputs.solution_name }}"
+            exit 1
+          fi
+  
           echo "Checking approval for PR #$PR_NUMBER"
- 
+  
           while true; do
-
             REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-
               "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews")
- 
+  
             APPROVED=$(echo "$REVIEWS" | jq -r '.[] | select(.state=="APPROVED") | .user.login')
- 
-            if [[ ! -z "$APPROVED" ]]; then
-
+  
+            if [ ! -z "$APPROVED" ]; then
               echo "PR Approved by: $APPROVED"
-
+              echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
               break
-
             else
-
               echo "Waiting for Code Owner approval..."
-
               sleep 30  # Check every 30 seconds
-
             fi
-
           done
- 
+        shell: bash
 
 
   merge-pr:
