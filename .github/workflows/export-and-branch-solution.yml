@@ -95,18 +95,32 @@ jobs:
   
       - name: Wait for PR Approval
         run: |
-          $PR_NUMBER = ${{ github.event.pull_request.number }}  # Dynamic PR number
+          $PR_NUMBER = "${{ steps.create_pr.outputs.pull-request-number }}"
+          if (-not $PR_NUMBER) {
+            Write-Error "PR number not found. Ensure the 'Create Pull Request' step succeeded."
+            exit 1
+          }
           Write-Output "Waiting for PR #$PR_NUMBER to be approved..."
           
+          # Small delay to ensure PR is fully created
+          Start-Sleep -Seconds 10
+          
           while ($true) {
-            $APPROVAL_COUNT = gh api repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews --jq '[.[] | select(.state=="APPROVED")] | length'
-            Write-Output "Approval count: $APPROVAL_COUNT"
-        
-            if ([int]$APPROVAL_COUNT -gt 0) {  # Ensure it’s treated as an integer
-              Write-Output "PR has been approved! Proceeding..."
-              break
+            $APPROVAL_COUNT = gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews" --jq '[.[] | select(.state=="APPROVED")] | length' 2>&1
+            Write-Output "Raw approval count response: $APPROVAL_COUNT"
+            
+            # Check if the response is a number
+            if ($APPROVAL_COUNT -match '^\d+$') {
+              $APPROVAL_COUNT_INT = [int]$APPROVAL_COUNT
+              Write-Output "Parsed approval count: $APPROVAL_COUNT_INT"
+              if ($APPROVAL_COUNT_INT -gt 0) {
+                Write-Output "PR #$PR_NUMBER has been approved! Proceeding..."
+                break
+              }
+            } else {
+              Write-Output "Invalid approval count response: $APPROVAL_COUNT"
             }
-        
+            
             Write-Output "Waiting for approval... checking again in 30 seconds."
             Start-Sleep -Seconds 30
           }
