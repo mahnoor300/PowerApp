@@ -93,30 +93,30 @@ jobs:
           base: main
           delete-branch: false
 
-    - name: Wait for PR Approval
-      run: |
-        $PR_NUMBER=48
-        Write-Output "Waiting for PR #$PR_NUMBER to be approved..."
-        
-        while ($true) {
-          $PR_STATE = gh pr view $PR_NUMBER --repo ${{ github.repository }} --json state --jq .state
-          Write-Output "Current PR state: $PR_STATE"
-
-          if ($PR_STATE -eq "MERGED") {
-            Write-Output "PR has been merged! Proceeding..."
-            break
+      - name: Wait for PR Approval
+        run: |
+          $PR_NUMBER=48
+          Write-Output "Waiting for PR #$PR_NUMBER to be approved..."
+          
+          while ($true) {
+            $PR_STATE = gh pr view $PR_NUMBER --repo ${{ github.repository }} --json state --jq .state
+            Write-Output "Current PR state: $PR_STATE"
+  
+            if ($PR_STATE -eq "MERGED") {
+              Write-Output "PR has been merged! Proceeding..."
+              break
+            }
+            if ($PR_STATE -eq "CLOSED") {
+              Write-Output "PR was closed without merging. Exiting..."
+              exit 1
+            }
+  
+            Write-Output "Waiting for approval... checking again in 30 seconds."
+            Start-Sleep -Seconds 30
           }
-          if ($PR_STATE -eq "CLOSED") {
-            Write-Output "PR was closed without merging. Exiting..."
-            exit 1
-          }
-
-          Write-Output "Waiting for approval... checking again in 30 seconds."
-          Start-Sleep -Seconds 30
-        }
-      shell: pwsh
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
 
